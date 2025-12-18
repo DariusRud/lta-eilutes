@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <!-- MAIN APP VIEW (HIDDEN INITIALLY) -->
+        <!-- MAIN APP VIEW -->
         <div id="main-view" class="hidden flex-1 flex h-screen overflow-hidden bg-white">
             <!-- ADMIN SIDEBAR -->
             <aside id="admin-sidebar" class="hidden w-72 bg-slate-900 text-slate-400 p-8 flex flex-col border-r border-slate-800 shadow-2xl overflow-y-auto">
@@ -368,18 +368,29 @@
             selection[key] = value;
             if (key === 'type') {
                 document.querySelectorAll('.type-btn').forEach(b => {
+                    const icon = b.querySelector('svg, i');
+                    const label = b.querySelector('span');
+                    
                     if (b.dataset.type === value) {
                         b.classList.add('border-blue-600', 'bg-blue-50', 'shadow-inner');
-                        b.querySelector('i').classList.remove('text-slate-200');
-                        b.querySelector('i').classList.add('text-blue-600');
-                        b.querySelector('span').classList.remove('text-slate-300');
-                        b.querySelector('span').classList.add('text-blue-700');
+                        if (icon) {
+                            icon.classList.remove('text-slate-200');
+                            icon.classList.add('text-blue-600');
+                        }
+                        if (label) {
+                            label.classList.remove('text-slate-300');
+                            label.classList.add('text-blue-700');
+                        }
                     } else {
                         b.classList.remove('border-blue-600', 'bg-blue-50', 'shadow-inner');
-                        b.querySelector('i').classList.add('text-slate-200');
-                        b.querySelector('i').classList.remove('text-blue-600');
-                        b.querySelector('span').classList.add('text-slate-300');
-                        b.querySelector('span').classList.remove('text-blue-700');
+                        if (icon) {
+                            icon.classList.add('text-slate-200');
+                            icon.classList.remove('text-blue-600');
+                        }
+                        if (label) {
+                            label.classList.add('text-slate-300');
+                            label.classList.remove('text-blue-700');
+                        }
                     }
                 });
             }
@@ -432,7 +443,7 @@
                 const span = ind.querySelector('span');
 
                 if (userStep > stepNum) {
-                    circle.classList.replace('bg-blue-600', 'bg-green-500'); // Optional: finish color
+                    circle.classList.replace('bg-blue-600', 'bg-green-500'); 
                     circle.innerHTML = '<i data-lucide="check" class="w-6 h-6"></i>';
                 } else if (userStep === stepNum) {
                     circle.classList.add('bg-blue-600', 'text-white', 'shadow-xl', 'ring-4', 'ring-white');
@@ -449,8 +460,15 @@
                 }
             });
 
-            document.getElementById('prev-btn').style.visibility = (userStep > 1 && userStep < 5) ? 'visible' : 'hidden';
-            document.getElementById('wizard-nav').classList.toggle('hidden', userStep === 4 || userStep === 5);
+            const prevBtn = document.getElementById('prev-btn');
+            if (prevBtn) {
+                prevBtn.style.visibility = (userStep > 1 && userStep < 5) ? 'visible' : 'hidden';
+            }
+            
+            const wizardNav = document.getElementById('wizard-nav');
+            if (wizardNav) {
+                wizardNav.classList.toggle('hidden', userStep === 4 || userStep === 5);
+            }
             
             validateNext();
             lucide.createIcons();
@@ -458,6 +476,7 @@
 
         function validateNext() {
             const btn = document.getElementById('next-btn');
+            if (!btn) return;
             let valid = true;
             if (userStep === 1 && !selection.type) valid = false;
             if (userStep === 3 && !selection.file) valid = false;
@@ -523,7 +542,6 @@
                         }
                     }
 
-                    // Artificial delay for UX
                     await new Promise(res => setTimeout(res, 2000));
 
                     if (resultData.length > 0) {
