@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Užimtumo Robotas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .animate-spin-slow { animation: spin 3s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        [v-cloak] { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- LOGIN VIEW -->
+        <div id="login-view" class="flex-1 flex items-center justify-center p-8">
+            <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-12 border border-slate-100">
+                <div class="flex flex-col items-center mb-12 text-center">
+                    <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Prisijungimas</h1>
+                </div>
+                <form id="login-form" class="space-y-6">
+                    <div class="relative group">
+                        <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-600 w-5 h-5"></i>
+                        <input type="text" id="username" placeholder="Vartotojas" required
+                            class="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-50/50 outline-none transition-all font-bold text-slate-700 placeholder:text-slate-300">
+                    </div>
+                    <div class="relative group">
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-600 w-5 h-5"></i>
+                        <input type="password" id="password" placeholder="Slaptažodis" required
+                            class="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-50/50 outline-none transition-all font-bold text-slate-700 placeholder:text-slate-300">
+                    </div>
+                    <div id="login-error" class="hidden text-red-500 text-[10px] font-black uppercase text-center tracking-widest animate-pulse">
+                        Neteisingi duomenys
+                    </div>
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-black py-5 rounded-2xl shadow-xl uppercase tracking-widest text-xs transition-all active:scale-95">
+                        Prisijungti
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- MAIN APP VIEW (HIDDEN INITIALLY) -->
+        <div id="main-view" class="hidden flex-1 flex h-screen overflow-hidden bg-white">
+            <!-- ADMIN SIDEBAR -->
+            <aside id="admin-sidebar" class="hidden w-72 bg-slate-900 text-slate-400 p-8 flex flex-col border-r border-slate-800 shadow-2xl overflow-y-auto">
+                <div class="flex items-center gap-4 text-white mb-10 px-2">
+                    <div class="p-2 bg-blue-600 rounded-xl shadow-lg"><i data-lucide="database" class="w-6 h-6"></i></div>
+                    <span class="font-black text-xl tracking-tighter uppercase italic">Admin</span>
+                </div>
+                <nav class="space-y-1 flex-1">
+                    <div class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 px-4">Duomenų bazės</div>
+                    <button onclick="switchAdminTab('static_db')" class="admin-tab-btn w-full flex items-center gap-3 p-4 rounded-2xl transition-all hover:bg-slate-800/50" data-tab="static_db">
+                        <i data-lucide="table" class="w-4 h-4"></i> Statika
+                    </button>
+                    <button onclick="switchAdminTab('led_db')" class="admin-tab-btn w-full flex items-center gap-3 p-4 rounded-2xl transition-all hover:bg-slate-800/50" data-tab="led_db">
+                        <i data-lucide="monitor" class="w-4 h-4"></i> LED Ekranai
+                    </button>
+                    <div class="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mt-10 mb-4 px-4">Eksporto šablonai</div>
+                    <button onclick="switchAdminTab('static_template')" class="admin-tab-btn w-full flex items-center gap-3 p-4 rounded-2xl transition-all hover:bg-slate-800/50" data-tab="static_template">
+                        <i data-lucide="settings" class="w-4 h-4"></i> Statikos šablonas
+                    </button>
+                    <button onclick="switchAdminTab('led_template')" class="admin-tab-btn w-full flex items-center gap-3 p-4 rounded-2xl transition-all hover:bg-slate-800/50" data-tab="led_template">
+                        <i data-lucide="settings" class="w-4 h-4"></i> LED šablonas
+                    </button>
+                </nav>
+                <button onclick="handleLogout()" class="flex items-center gap-3 p-4 text-slate-500 hover:text-red-400 transition-colors border-t border-slate-800 mt-6 w-full text-left font-bold uppercase text-xs tracking-widest">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Atsijungti
+                </button>
+            </aside>
+
+            <!-- CONTENT AREA -->
+            <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50">
+                
+                <!-- USER WIZARD FLOW -->
+                <div id="user-flow" class="hidden flex-1 flex flex-col items-center justify-center p-8">
+                    <div class="w-full max-w-4xl">
+                        <!-- PROGRESS BAR -->
+                        <div class="mb-20 flex justify-between relative px-10">
+                            <div class="absolute top-6 left-16 right-16 h-0.5 bg-slate-200 z-0"></div>
+                            <div class="step-indicator relative z-10 flex flex-col items-center gap-4" data-step="1">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-blue-600 text-white shadow-xl ring-4 ring-white">1</div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-blue-600">Tipas</span>
+                            </div>
+                            <div class="step-indicator relative z-10 flex flex-col items-center gap-4" data-step="2">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-white border-2 border-slate-200 text-slate-300">2</div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">Data</span>
+                            </div>
+                            <div class="step-indicator relative z-10 flex flex-col items-center gap-4" data-step="3">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-white border-2 border-slate-200 text-slate-300">3</div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">Įkelti</span>
+                            </div>
+                            <div class="step-indicator relative z-10 flex flex-col items-center gap-4" data-step="4">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-white border-2 border-slate-200 text-slate-300">4</div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">Formuoti</span>
+                            </div>
+                            <div class="step-indicator relative z-10 flex flex-col items-center gap-4" data-step="5">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-white border-2 border-slate-200 text-slate-300">5</div>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">Sėkmė</span>
+                            </div>
+                        </div>
+
+                        <!-- WIZARD CARD -->
+                        <div class="bg-white rounded-[4rem] shadow-2xl p-16 md:p-24 min-h-[550px] flex flex-col border border-slate-100 relative">
+                            
+                            <!-- STEP 1: TYPE -->
+                            <div id="step-1" class="wizard-step animate-in fade-in slide-in-from-bottom-12 duration-700">
+                                <h2 class="text-5xl font-black text-slate-900 mb-12 uppercase tracking-tighter text-center">Pasirinkite Tipą</h2>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                                    <button onclick="setSelection('type', 'Statika')" class="type-btn p-14 rounded-[3rem] border-4 transition-all flex flex-col items-center justify-center gap-6 group hover:border-blue-100 bg-slate-50/50" data-type="Statika">
+                                        <i data-lucide="file-spreadsheet" class="w-14 h-14 text-slate-200 group-hover:text-blue-600"></i>
+                                        <span class="font-black text-3xl uppercase tracking-tighter text-slate-300 group-hover:text-blue-700">Statika</span>
+                                    </button>
+                                    <button onclick="setSelection('type', 'LED')" class="type-btn p-14 rounded-[3rem] border-4 transition-all flex flex-col items-center justify-center gap-6 group hover:border-blue-100 bg-slate-50/50" data-type="LED">
+                                        <i data-lucide="monitor" class="w-14 h-14 text-slate-200 group-hover:text-blue-600"></i>
+                                        <span class="font-black text-3xl uppercase tracking-tighter text-slate-300 group-hover:text-blue-700">LED</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- STEP 2: DATES -->
+                            <div id="step-2" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 text-center">
+                                <h2 class="text-5xl font-black text-slate-900 mb-12 uppercase tracking-tighter">Intervalas</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-center">
+                                    <button onclick="setDateMode('auto')" class="date-mode-btn p-10 rounded-[2.5rem] border-4 flex flex-col items-center justify-center transition-all bg-slate-50 border-slate-50 text-slate-300 hover:border-blue-100" id="btn-auto">
+                                        <i data-lucide="refresh-ccw" class="w-8 h-8 mb-4"></i>
+                                        <span class="font-black text-xl uppercase tracking-tighter">3 mėn nuo šiandien</span>
+                                    </button>
+                                    <button onclick="setDateMode('custom')" class="date-mode-btn p-10 rounded-[2.5rem] border-4 flex flex-col items-center justify-center transition-all bg-slate-50 border-slate-50 text-slate-300 hover:border-blue-100" id="btn-custom">
+                                        <i data-lucide="calendar" class="w-8 h-8 mb-4"></i>
+                                        <span class="font-black text-xl uppercase tracking-tighter">Pasirinkti intervalą</span>
+                                    </button>
+                                </div>
+                                <div class="p-10 bg-slate-50 rounded-[3rem] grid grid-cols-2 gap-10 border border-slate-100">
+                                    <div>
+                                        <label class="text-[10px] font-black text-slate-400 uppercase mb-4 block tracking-widest text-left font-mono">Pradžia (YYYY-MM-DD)</label>
+                                        <input type="date" id="dateStart" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-black text-slate-400 uppercase mb-4 block tracking-widest text-left font-mono">Pabaiga (YYYY-MM-DD)</label>
+                                        <input type="date" id="dateEnd" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 3: UPLOAD -->
+                            <div id="step-3" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 flex-1 flex flex-col text-center">
+                                <h2 class="text-5xl font-black text-slate-900 mb-12 uppercase tracking-tighter">Įkelti failą</h2>
+                                <div class="relative group border-4 border-dashed border-slate-100 rounded-[3.5rem] p-24 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-blue-400 transition-all cursor-pointer flex-1">
+                                    <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer" accept=".xlsx">
+                                    <div class="p-10 bg-white rounded-[2.5rem] shadow-xl mb-8 group-hover:scale-110 transition-transform text-blue-600">
+                                        <i data-lucide="file-up" class="w-16 h-16"></i>
+                                    </div>
+                                    <p id="file-name" class="font-black text-slate-900 text-2xl tracking-tight">Nutempkite Excel failą čia</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 4: PROCESSING -->
+                            <div id="step-4" class="wizard-step hidden animate-in zoom-in duration-700 flex flex-col items-center justify-center flex-1 text-center">
+                                <div id="formuoti-prompt">
+                                    <i data-lucide="refresh-ccw" class="w-24 h-24 text-blue-600 mb-12 animate-spin-slow"></i>
+                                    <h2 class="text-4xl font-black text-slate-900 mb-6 uppercase tracking-tighter">Formuoti eilutes?</h2>
+                                    <button onclick="startProcessing()" class="px-24 py-7 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-[2.5rem] shadow-2xl shadow-blue-200 uppercase tracking-widest text-sm transition-all active:scale-95">Pradėti nuskaitymą</button>
+                                </div>
+                                <div id="processing-spinner" class="hidden">
+                                    <div class="relative w-48 h-48 mx-auto mb-12">
+                                        <div class="w-full h-full border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center font-black text-blue-600 uppercase text-xs tracking-tighter font-mono italic">...</div>
+                                    </div>
+                                    <h3 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Vyksta nuskaitymas</h3>
+                                    <p class="text-slate-400 mt-4 font-bold uppercase tracking-[0.2em] text-[10px]">Formuojamos duomenų eilutės...</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 5: SUCCESS -->
+                            <div id="step-5" class="wizard-step hidden animate-in zoom-in duration-700 flex flex-col items-center justify-center flex-1 text-center">
+                                <div class="w-40 h-40 bg-green-500 text-white rounded-[3rem] flex items-center justify-center mb-12 shadow-2xl shadow-green-200 rotate-6">
+                                    <i data-lucide="check-circle-2" class="w-24 h-24"></i>
+                                </div>
+                                <h2 class="text-5xl font-black text-slate-900 mb-6 uppercase tracking-tighter">SUFORMUOTA</h2>
+                                <p id="success-message" class="text-slate-500 mb-10 max-w-sm mx-auto font-medium leading-relaxed"></p>
+                                <button onclick="resetWizard()" class="px-10 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all flex items-center gap-3">
+                                    <i data-lucide="refresh-ccw" class="w-4 h-4"></i> Naujas nuskaitymas
+                                </button>
+                            </div>
+
+                            <!-- WIZARD NAV -->
+                            <div id="wizard-nav" class="mt-auto pt-20 flex justify-between items-center border-t border-slate-50">
+                                <button onclick="changeStep(-1)" id="prev-btn" class="flex items-center gap-3 font-black uppercase tracking-widest text-xs text-slate-300 hover:text-slate-900 transition-colors invisible">
+                                    <i data-lucide="arrow-left" class="w-6 h-6"></i> Atgal
+                                </button>
+                                <div class="flex items-center gap-6">
+                                    <button onclick="handleLogout()" class="text-xs font-black text-slate-300 uppercase hover:text-red-500 transition-colors">Atšaukti</button>
+                                    <button onclick="changeStep(1)" id="next-btn" class="bg-slate-900 hover:bg-black text-white font-black px-16 py-6 rounded-[2rem] flex items-center gap-4 shadow-2xl disabled:bg-slate-100 disabled:text-slate-200 transition-all uppercase tracking-widest text-xs">
+                                        Toliau <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADMIN PANELS -->
+                <div id="admin-panel" class="hidden p-12 space-y-16 max-w-7xl mx-auto w-full">
+                    <header class="flex justify-between items-end border-b border-slate-100 pb-12">
+                        <div>
+                            <h2 id="admin-title" class="text-6xl font-black text-slate-900 uppercase tracking-tighter">Duomenų bazė</h2>
+                            <div class="flex items-center gap-4 mt-4">
+                                <span id="admin-badge" class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em]">STATIKA</span>
+                                <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Struktūros valdymas</p>
+                            </div>
+                        </div>
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-blue-500/20 flex items-center gap-3 transition-all hover:-translate-y-1 active:scale-95">
+                            <i data-lucide="plus" class="w-5 h-5"></i> Pridėti įrašą
+                        </button>
+                    </header>
+
+                    <!-- DB TABLE VIEW -->
+                    <div id="admin-db-view" class="bg-white rounded-[3.5rem] border border-slate-100 shadow-2xl overflow-hidden">
+                        <div class="p-10 bg-slate-50 flex items-center justify-between">
+                            <div class="relative w-96">
+                                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                                <input type="text" placeholder="Ieškoti..." class="w-full pl-12 pr-6 py-4 bg-white rounded-2xl border border-slate-200 outline-none text-sm font-medium transition-all">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left" id="db-table">
+                                <!-- Dynamic content -->
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TEMPLATE VIEW -->
+                    <div id="admin-template-view" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-16">
+                        <div class="bg-white rounded-[4rem] p-16 border border-slate-100 shadow-2xl overflow-hidden">
+                            <h3 class="text-3xl font-black text-slate-900 mb-10 uppercase tracking-tighter">Stulpelių tvarka</h3>
+                            <div id="template-list" class="space-y-4 font-mono text-xs">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 rounded-[4rem] p-16 text-white flex flex-col shadow-2xl relative border border-slate-800">
+                            <h3 class="text-3xl font-black mb-10 uppercase tracking-tighter text-blue-400">Eksporto taisyklė</h3>
+                            <div id="export-rule-text" class="bg-slate-800/40 rounded-[2.5rem] p-10 flex-1 border border-slate-800 italic text-sm text-slate-400 leading-relaxed font-medium">
+                                <!-- Dynamic text -->
+                            </div>
+                            <button class="w-full mt-12 bg-blue-600 hover:bg-blue-700 py-7 rounded-[2.5rem] font-black uppercase tracking-widest text-[11px] transition-all shadow-xl shadow-blue-500/20 active:scale-95">Išsaugoti pakeitimus</button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & STATE ---
+        let currentUser = null;
+        let userStep = 1;
+        let selection = {
+            type: null,
+            dateMode: 'auto',
+            dateStart: formatDate(new Date()),
+            dateEnd: '',
+            file: null
+        };
+
+        const INITIAL_STATIC_DB = [
+            { id: 1, statusas: 'OK', kodas: 'K101', miestas: 'Kaunas', adresas: 'Veiverių g. 13', tipas: 'Billboard' },
+            { id: 2, statusas: 'OK', kodas: 'V205', miestas: 'Vilnius', adresas: 'Geležinio Vilko g.', tipas: 'Bigboard' },
+        ];
+
+        const INITIAL_LED_DB = [
+            { id: 1, statusas: 'Live', kodas: 'LED-V1', ekranas: 'Panorama LED', adresas: 'Saltoniškių g. 9', rezoliucija: '1920x1080', darboLaikas: '08:00 - 22:00' },
+            { id: 2, statusas: 'Live', kodas: 'LED-K1', ekranas: 'Akropolis LED', adresas: 'Karaliaus Mindaugo pr.', rezoliucija: '1280x720', darboLaikas: '07:00 - 23:00' },
+        ];
+
+        const TEMPLATES = {
+            static: [
+                { n: 'Statusas', t: 'FIX' }, { n: 'Kodas', t: 'FIX' }, { n: 'Miestas', t: 'FIX' },
+                { n: 'Pardavimų adresas', t: 'FIX' }, { n: 'Tipas', t: 'FIX' }, { n: 'Leidimai nuo', t: 'LIVE' },
+                { n: 'Leidimai iki', t: 'LIVE' }, { n: 'Data', t: 'CAL' }, { n: 'Pardavimas', t: 'CONTENT' }
+            ],
+            led: [
+                { n: 'Statusas', t: 'FIX' }, { n: 'Kodas', t: 'FIX' }, { n: 'Ekranas', t: 'FIX' },
+                { n: 'Adresas', t: 'FIX' }, { n: 'Rezoliucija', t: 'FIX' }, { n: 'Darbo laikas', t: 'FIX' },
+                { n: 'Data', t: 'CAL' }, { n: 'Pardavimas', t: 'CONTENT' }
+            ]
+        };
+
+        // --- UTILS ---
+        function formatDate(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function initDates() {
+            const start = new Date();
+            const end = new Date();
+            end.setMonth(end.getMonth() + 3);
+            selection.dateStart = formatDate(start);
+            selection.dateEnd = formatDate(end);
+            document.getElementById('dateStart').value = selection.dateStart;
+            document.getElementById('dateEnd').value = selection.dateEnd;
+        }
+
+        // --- AUTH ---
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const error = document.getElementById('login-error');
+
+            if (user === 'Admin' && pass === 'admin123') {
+                login('admin');
+            } else if (user === 'User' && pass === 'user123') {
+                login('user');
+            } else {
+                error.classList.remove('hidden');
+            }
+        });
+
+        function login(role) {
+            currentUser = role;
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('main-view').classList.remove('hidden');
+            
+            if (role === 'admin') {
+                document.getElementById('admin-sidebar').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('user-flow').classList.add('hidden');
+                switchAdminTab('static_db');
+            } else {
+                document.getElementById('admin-sidebar').classList.add('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+                document.getElementById('user-flow').classList.remove('hidden');
+                resetWizard();
+            }
+            lucide.createIcons();
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('login-view').classList.remove('hidden');
+            document.getElementById('main-view').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+        }
+
+        // --- WIZARD LOGIC ---
+        function resetWizard() {
+            userStep = 1;
+            selection = { type: null, dateMode: 'auto', dateStart: formatDate(new Date()), dateEnd: '', file: null };
+            initDates();
+            updateStepView();
+        }
+
+        function setSelection(key, value) {
+            selection[key] = value;
+            if (key === 'type') {
+                document.querySelectorAll('.type-btn').forEach(b => {
+                    if (b.dataset.type === value) {
+                        b.classList.add('border-blue-600', 'bg-blue-50', 'shadow-inner');
+                        b.querySelector('i').classList.remove('text-slate-200');
+                        b.querySelector('i').classList.add('text-blue-600');
+                        b.querySelector('span').classList.remove('text-slate-300');
+                        b.querySelector('span').classList.add('text-blue-700');
+                    } else {
+                        b.classList.remove('border-blue-600', 'bg-blue-50', 'shadow-inner');
+                        b.querySelector('i').classList.add('text-slate-200');
+                        b.querySelector('i').classList.remove('text-blue-600');
+                        b.querySelector('span').classList.add('text-slate-300');
+                        b.querySelector('span').classList.remove('text-blue-700');
+                    }
+                });
+            }
+            validateNext();
+        }
+
+        function setDateMode(mode) {
+            selection.dateMode = mode;
+            const btnAuto = document.getElementById('btn-auto');
+            const btnCustom = document.getElementById('btn-custom');
+            const inputs = document.querySelectorAll('.date-input');
+
+            if (mode === 'auto') {
+                btnAuto.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-700');
+                btnAuto.classList.remove('text-slate-300');
+                btnCustom.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700');
+                btnCustom.classList.add('text-slate-300');
+                inputs.forEach(i => { i.disabled = true; i.classList.add('border-transparent', 'text-slate-300'); i.classList.remove('border-slate-200', 'focus:border-blue-600'); });
+                initDates();
+            } else {
+                btnCustom.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-700');
+                btnCustom.classList.remove('text-slate-300');
+                btnAuto.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700');
+                btnAuto.classList.add('text-slate-300');
+                inputs.forEach(i => { i.disabled = false; i.classList.remove('border-transparent', 'text-slate-300'); i.classList.add('border-slate-200', 'focus:border-blue-600'); });
+            }
+        }
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selection.file = file;
+                document.getElementById('file-name').innerText = file.name;
+                validateNext();
+            }
+        });
+
+        function changeStep(dir) {
+            userStep += dir;
+            updateStepView();
+        }
+
+        function updateStepView() {
+            document.querySelectorAll('.wizard-step').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`step-${userStep}`).classList.remove('hidden');
+
+            document.querySelectorAll('.step-indicator').forEach(ind => {
+                const stepNum = parseInt(ind.dataset.step);
+                const circle = ind.querySelector('div');
+                const span = ind.querySelector('span');
+
+                if (userStep > stepNum) {
+                    circle.classList.replace('bg-blue-600', 'bg-green-500'); // Optional: finish color
+                    circle.innerHTML = '<i data-lucide="check" class="w-6 h-6"></i>';
+                } else if (userStep === stepNum) {
+                    circle.classList.add('bg-blue-600', 'text-white', 'shadow-xl', 'ring-4', 'ring-white');
+                    circle.classList.remove('bg-white', 'border-2', 'border-slate-200', 'text-slate-300');
+                    circle.innerHTML = stepNum;
+                    span.classList.add('text-blue-600');
+                    span.classList.remove('text-slate-300');
+                } else {
+                    circle.classList.remove('bg-blue-600', 'text-white', 'shadow-xl', 'ring-4', 'ring-white');
+                    circle.classList.add('bg-white', 'border-2', 'border-slate-200', 'text-slate-300');
+                    circle.innerHTML = stepNum;
+                    span.classList.remove('text-blue-600');
+                    span.classList.add('text-slate-300');
+                }
+            });
+
+            document.getElementById('prev-btn').style.visibility = (userStep > 1 && userStep < 5) ? 'visible' : 'hidden';
+            document.getElementById('wizard-nav').classList.toggle('hidden', userStep === 4 || userStep === 5);
+            
+            validateNext();
+            lucide.createIcons();
+        }
+
+        function validateNext() {
+            const btn = document.getElementById('next-btn');
+            let valid = true;
+            if (userStep === 1 && !selection.type) valid = false;
+            if (userStep === 3 && !selection.file) valid = false;
+            btn.disabled = !valid;
+        }
+
+        // --- PROCESSING ENGINE ---
+        async function startProcessing() {
+            document.getElementById('formuoti-prompt').classList.add('hidden');
+            document.getElementById('processing-spinner').classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
+                    
+                    const dateRow = rows[14]; 
+                    const startIdx = 27; 
+                    const startDateLimit = new Date(document.getElementById('dateStart').value);
+                    const endDateLimit = new Date(document.getElementById('dateEnd').value);
+
+                    const resultData = [];
+                    const isStatika = selection.type === 'Statika';
+
+                    for (let i = 15; i < rows.length; i++) {
+                        const row = rows[i];
+                        if (!row || !row[12]) continue;
+
+                        let entryBase = isStatika ? {
+                            'Statusas': row[1] || '',
+                            'Kodas': row[12] || '',
+                            'Miestas': row[13] || '',
+                            'Pardavimų adresas': row[14] || '',
+                            'Tipas': row[15] || '',
+                            'Leidimai nuo': formatDate(row[25]),
+                            'Leidimai iki': formatDate(row[26]),
+                        } : {
+                            'Statusas': row[1] || '',
+                            'Kodas': row[12] || '',
+                            'Ekranas': row[13] || '',
+                            'Adresas': row[14] || '',
+                            'Rezoliucija': row[15] || '',
+                            'Darbo laikas': row[16] || '',
+                        };
+
+                        for (let j = startIdx; j < dateRow.length; j++) {
+                            const cellDate = dateRow[j];
+                            if (!cellDate || !(cellDate instanceof Date)) continue;
+
+                            if (cellDate >= startDateLimit && cellDate <= endDateLimit) {
+                                const content = row[j];
+                                if (content && typeof content === 'string' && content.trim() !== '') {
+                                    resultData.push({
+                                        ...entryBase,
+                                        'Data': formatDate(cellDate),
+                                        'Pardavimas': content.trim()
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    // Artificial delay for UX
+                    await new Promise(res => setTimeout(res, 2000));
+
+                    if (resultData.length > 0) {
+                        const newSheet = XLSX.utils.json_to_sheet(resultData);
+                        const newWorkbook = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(newWorkbook, newSheet, "Eksportas");
+                        XLSX.writeFile(newWorkbook, `Eksportas_${selection.type}_${formatDate(new Date())}.xlsx`);
+                        
+                        document.getElementById('success-message').innerHTML = `Duomenys sėkmingai ištraukti už laikotarpį: <br><b>${formatDate(startDateLimit)} iki ${formatDate(endDateLimit)}</b>`;
+                        userStep = 5;
+                        updateStepView();
+                    } else {
+                        alert("Pasirinktame intervale užsakymų nerasta.");
+                        document.getElementById('formuoti-prompt').classList.remove('hidden');
+                        document.getElementById('processing-spinner').classList.add('hidden');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Klaida nuskaitant failą.");
+                    document.getElementById('formuoti-prompt').classList.remove('hidden');
+                    document.getElementById('processing-spinner').classList.add('hidden');
+                }
+            };
+            reader.readAsArrayBuffer(selection.file);
+        }
+
+        // --- ADMIN PANELS LOGIC ---
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                if (btn.dataset.tab === tab) {
+                    btn.classList.add('bg-slate-800', 'text-white', 'border-l-4', 'border-blue-500', 'shadow-xl');
+                    btn.classList.remove('hover:bg-slate-800/50');
+                } else {
+                    btn.classList.remove('bg-slate-800', 'text-white', 'border-l-4', 'border-blue-500', 'shadow-xl');
+                    btn.classList.add('hover:bg-slate-800/50');
+                }
+            });
+
+            const title = document.getElementById('admin-title');
+            const badge = document.getElementById('admin-badge');
+            const dbView = document.getElementById('admin-db-view');
+            const templateView = document.getElementById('admin-template-view');
+
+            if (tab.includes('_db')) {
+                dbView.classList.remove('hidden');
+                templateView.classList.add('hidden');
+                title.innerText = "Duomenų bazė";
+                badge.innerText = tab === 'static_db' ? "STATIKA" : "LED";
+                renderDB(tab === 'static_db' ? 'static' : 'led');
+            } else {
+                dbView.classList.add('hidden');
+                templateView.classList.remove('hidden');
+                title.innerText = "Eksporto šablonas";
+                badge.innerText = tab === 'static_template' ? "STATIKA" : "LED";
+                renderTemplate(tab === 'static_template' ? 'static' : 'led');
+            }
+            lucide.createIcons();
+        }
+
+        function renderDB(type) {
+            const table = document.getElementById('db-table');
+            const data = type === 'static' ? INITIAL_STATIC_DB : INITIAL_LED_DB;
+            
+            let html = `<thead><tr class="bg-slate-50 border-b border-slate-100">`;
+            html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Statusas</th>`;
+            html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kodas</th>`;
+            
+            if (type === 'static') {
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Miestas</th>`;
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Pardavimų adresas</th>`;
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Tipas</th>`;
+            } else {
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ekranas</th>`;
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Adresas</th>`;
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Rezoliucija</th>`;
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Darbo laikas</th>`;
+            }
+            html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Veiksmai</th></tr></thead>`;
+
+            html += `<tbody class="divide-y divide-slate-50">`;
+            data.forEach(item => {
+                html += `<tr class="hover:bg-slate-50 group">`;
+                html += `<td class="px-10 py-8"><span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${item.statusas === 'OK' || item.statusas === 'Live' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${item.statusas}</span></td>`;
+                html += `<td class="px-10 py-8 font-mono font-black text-blue-600 text-lg tracking-tight">${item.kodas}</td>`;
+                
+                if (type === 'static') {
+                    html += `<td class="px-10 py-8 text-slate-900 font-extrabold uppercase">${item.miestas}</td>`;
+                    html += `<td class="px-10 py-8 text-slate-500 font-medium text-sm">${item.adresas}</td>`;
+                    html += `<td class="px-10 py-8 font-black text-slate-400 text-[11px] uppercase tracking-wider">${item.tipas}</td>`;
+                } else {
+                    html += `<td class="px-10 py-8 text-slate-900 font-extrabold uppercase">${item.ekranas}</td>`;
+                    html += `<td class="px-10 py-8 text-slate-500 font-medium text-sm">${item.adresas}</td>`;
+                    html += `<td class="px-10 py-8 font-black text-slate-400 text-[11px] uppercase">${item.rezoliucija}</td>`;
+                    html += `<td class="px-10 py-8 font-mono text-xs">${item.darboLaikas}</td>`;
+                }
+                html += `<td class="px-10 py-8 text-right opacity-0 group-hover:opacity-100 transition-opacity"><button class="p-3 text-slate-300 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td></tr>`;
+            });
+            html += `</tbody>`;
+            table.innerHTML = html;
+        }
+
+        function renderTemplate(type) {
+            const list = document.getElementById('template-list');
+            const ruleText = document.getElementById('export-rule-text');
+            const template = TEMPLATES[type];
+
+            let html = '';
+            template.forEach((col, i) => {
+                html += `<div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100 group transition-all">`;
+                html += `<div class="flex items-center gap-5"><span class="text-xs font-black text-blue-600 bg-blue-50 w-8 h-8 rounded-full flex items-center justify-center font-sans">${i+1}</span><span class="text-sm font-black text-slate-800 uppercase tracking-tight font-sans">${col.n}</span></div>`;
+                html += `<span class="text-[9px] font-black px-3 py-1.5 rounded-lg shadow-sm ${col.t === 'FIX' ? 'bg-slate-900 text-white' : col.t === 'CAL' ? 'bg-blue-500 text-white' : 'bg-white text-slate-500'}">${col.t}</span></div>`;
+            });
+            list.innerHTML = html;
+
+            ruleText.innerText = type === 'static' 
+                ? "Statikos objektai nuskaitomi iš Z ir AA stulpelių. 15-os eilutės kalendorius naudojamas identifikuoti užimtumą. Kiekvienam rastam įrašui formuojama transakcija su leidimų datomis."
+                : "LED užimtumas skenuojamas pagal transliacijų tinklelius. Kiekvienas užsakymas susiejamas su ekrano rezoliucija ir darbo laiku, formuojant atskirą eilutę kiekvienai dienai.";
+        }
+
+        // --- INIT ---
+        window.onload = () => {
+            lucide.createIcons();
+            initDates();
+        };
+    </script>
+</body>
+</html>
