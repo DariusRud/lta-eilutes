@@ -47,7 +47,7 @@
 
         <!-- PAGRINDINIS VAIZDAS -->
         <div id="main-view" class="hidden flex-1 flex h-screen overflow-hidden bg-white">
-            <!-- ADMIN SIDEBAR -->
+            <!-- ADMIN ŠONINIS MENIU -->
             <aside id="admin-sidebar" class="hidden w-72 bg-slate-900 text-slate-400 p-8 flex flex-col border-r border-slate-800 shadow-2xl overflow-y-auto">
                 <div class="flex items-center gap-4 text-white mb-10 px-2">
                     <div class="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20"><i data-lucide="database" class="w-6 h-6"></i></div>
@@ -109,95 +109,91 @@
                         <div class="bg-white rounded-[4rem] shadow-2xl p-16 md:p-24 min-h-[550px] flex flex-col border border-slate-100 relative overflow-hidden text-center font-sans">
                             
                             <!-- 1 ŽINGSNIS: TIPAS -->
-                            <div id="step-1" class="wizard-step animate-in fade-in slide-in-from-bottom-12 duration-700">
-                                <h2 class="text-5xl font-black text-slate-900 mb-12 uppercase tracking-tighter font-sans font-sans">Pasirinkite Tipą</h2>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center font-sans font-sans font-sans font-sans font-sans font-sans">
+                            <div id="step-1" class="wizard-step animate-in fade-in slide-in-from-bottom-12 duration-700 flex flex-col justify-center flex-1">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center font-sans">
                                     <button onclick="setSelection('type', 'Statika')" class="type-btn p-14 rounded-[3rem] border-4 transition-all flex flex-col items-center justify-center gap-6 group hover:border-blue-100 bg-slate-50/50" data-type="Statika">
                                         <i data-lucide="file-spreadsheet" class="w-14 h-14 text-slate-200 group-hover:text-blue-600 transition-colors"></i>
                                         <span class="font-black text-3xl uppercase tracking-tighter text-slate-300 group-hover:text-blue-700 font-sans">Statika</span>
                                     </button>
-                                    <button onclick="setSelection('type', 'LED')" class="type-btn p-14 rounded-[3rem] border-4 transition-all flex flex-col items-center justify-center gap-6 group hover:border-blue-100 bg-slate-50/50 font-sans font-sans font-sans" data-type="LED">
-                                        <i data-lucide="monitor" class="w-14 h-14 text-slate-200 group-hover:text-blue-600 transition-colors font-sans font-sans"></i>
-                                        <span class="font-black text-3xl uppercase tracking-tighter text-slate-300 group-hover:text-blue-700 font-sans font-sans">LED</span>
+                                    <button onclick="setSelection('type', 'LED')" class="type-btn p-14 rounded-[3rem] border-4 transition-all flex flex-col items-center justify-center gap-6 group hover:border-blue-100 bg-slate-50/50" data-type="LED">
+                                        <i data-lucide="monitor" class="w-14 h-14 text-slate-200 group-hover:text-blue-600 transition-colors"></i>
+                                        <span class="font-black text-3xl uppercase tracking-tighter text-slate-300 group-hover:text-blue-700 font-sans">LED</span>
                                     </button>
                                 </div>
                             </div>
 
                             <!-- 2 ŽINGSNIS: DATA -->
-                            <div id="step-2" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 text-center font-sans">
-                                <h2 class="text-5xl font-black text-slate-900 mb-12 uppercase tracking-tighter font-sans">Intervalas</h2>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-center font-sans font-sans font-sans">
+                            <div id="step-2" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 flex flex-col justify-center flex-1 text-center font-sans">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-center font-sans">
                                     <button onclick="setDateMode('auto')" class="date-mode-btn p-10 rounded-[2.5rem] border-4 flex flex-col items-center justify-center transition-all bg-slate-50 border-slate-50 text-slate-300 hover:border-blue-100 shadow-sm" id="btn-auto">
                                         <i data-lucide="refresh-ccw" class="w-8 h-8 mb-4"></i>
                                         <span class="font-black text-xl uppercase tracking-tighter font-sans">3 mėn nuo šiandien</span>
                                     </button>
                                     <button onclick="setDateMode('custom')" class="date-mode-btn p-10 rounded-[2.5rem] border-4 flex flex-col items-center justify-center transition-all bg-slate-50 border-slate-50 text-slate-300 hover:border-blue-100 shadow-sm font-sans" id="btn-custom">
                                         <i data-lucide="calendar" class="w-8 h-8 mb-4 font-sans"></i>
-                                        <span class="font-black text-xl uppercase tracking-tighter font-sans font-sans font-sans">Pasirinkti intervalą</span>
+                                        <span class="font-black text-xl uppercase tracking-tighter font-sans">Pasirinkti intervalą</span>
                                     </button>
                                 </div>
-                                <div class="p-10 bg-slate-50 rounded-[3rem] grid grid-cols-2 gap-10 border border-slate-100 text-left font-sans font-sans">
+                                <div class="p-10 bg-slate-50 rounded-[3rem] grid grid-cols-2 gap-10 border border-slate-100 text-left font-sans">
                                     <div>
                                         <label class="text-[10px] font-black text-slate-400 uppercase mb-4 block tracking-widest font-mono text-left font-sans">Pradžia (YYYY-MM-DD)</label>
-                                        <input type="date" id="dateStart" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600 font-sans font-sans">
+                                        <input type="date" id="dateStart" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600 font-sans">
                                     </div>
                                     <div>
                                         <label class="text-[10px] font-black text-slate-400 uppercase mb-4 block tracking-widest font-mono text-left font-sans">Pabaiga (YYYY-MM-DD)</label>
-                                        <input type="date" id="dateEnd" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600 font-sans font-sans font-sans">
+                                        <input type="date" id="dateEnd" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600 font-sans">
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 3 ŽINGSNIS: ĮKELTI -->
-                            <div id="step-3" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 flex-1 flex flex-col font-sans font-sans font-sans font-sans font-sans">
+                            <div id="step-3" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 flex-1 flex flex-col font-sans">
                                 <h2 class="text-5xl font-black text-slate-900 mb-12 uppercase tracking-tighter font-sans">Įkelti failą</h2>
-                                <div class="relative group border-4 border-dashed border-slate-100 rounded-[3.5rem] p-24 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-blue-400 transition-all cursor-pointer flex-1 font-sans font-sans">
+                                <div class="relative group border-4 border-dashed border-slate-100 rounded-[3.5rem] p-24 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-blue-400 transition-all cursor-pointer flex-1 font-sans">
                                     <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer font-sans" accept=".xlsx">
                                     <div class="p-10 bg-white rounded-[2.5rem] shadow-xl mb-8 group-hover:scale-110 transition-transform text-blue-600 font-sans">
                                         <i data-lucide="file-up" class="w-16 h-16 font-sans"></i>
                                     </div>
-                                    <p id="file-name" class="font-black text-slate-900 text-2xl tracking-tight font-sans font-sans font-sans">Nutempkite Excel failą čia</p>
+                                    <p id="file-name" class="font-black text-slate-900 text-2xl tracking-tight font-sans">Nutempkite Excel failą čia</p>
                                 </div>
                             </div>
 
                             <!-- 4 ŽINGSNIS: FORMUOTI -->
-                            <div id="step-4" class="wizard-step hidden animate-in zoom-in duration-700 flex flex-col items-center justify-center flex-1 font-sans font-sans">
-                                <div id="formuoti-prompt">
-                                    <i data-lucide="refresh-ccw" class="w-24 h-24 text-blue-600 mb-12 animate-spin-slow"></i>
-                                    <h2 class="text-4xl font-black text-slate-900 mb-6 uppercase tracking-tighter font-sans">Formuoti eilutes?</h2>
-                                    <button onclick="startProcessing()" class="px-24 py-7 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-[2.5rem] shadow-2xl shadow-blue-200 uppercase tracking-widest text-sm transition-all active:scale-95 font-sans font-sans">Pradėti nuskaitymą</button>
+                            <div id="step-4" class="wizard-step hidden animate-in zoom-in duration-700 flex flex-col items-center justify-center flex-1 font-sans">
+                                <div id="formuoti-prompt" class="flex flex-col items-center justify-center">
+                                    <button onclick="startProcessing()" class="px-24 py-7 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-[2.5rem] shadow-2xl shadow-blue-200 uppercase tracking-widest text-sm transition-all active:scale-95 font-sans">Pradėti nuskaitymą</button>
                                 </div>
                                 <div id="processing-spinner" class="hidden">
                                     <div class="relative w-48 h-48 mx-auto mb-12 font-sans">
-                                        <div class="w-full h-full border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin font-sans"></div>
-                                        <div class="absolute inset-0 flex items-center justify-center font-black text-blue-600 uppercase text-xs tracking-tighter font-mono italic font-sans font-sans">...</div>
+                                        <div class="w-full h-full border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+                                        <div class="absolute inset-0 flex items-center justify-center font-black text-blue-600 uppercase text-xs tracking-tighter font-mono italic font-sans">...</div>
                                     </div>
-                                    <h3 class="text-3xl font-black text-slate-900 uppercase tracking-tighter font-sans font-sans">Vyksta nuskaitymas</h3>
+                                    <h3 class="text-3xl font-black text-slate-900 uppercase tracking-tighter font-sans">Vyksta nuskaitymas</h3>
                                     <p class="text-slate-400 mt-4 font-bold uppercase tracking-[0.2em] text-[10px] font-sans">Formuojamos duomenų eilutės...</p>
                                 </div>
                             </div>
 
                             <!-- 5 ŽINGSNIS: SĖKMĖ -->
-                            <div id="step-5" class="wizard-step hidden animate-in zoom-in duration-700 flex flex-col items-center justify-center flex-1 font-sans font-sans">
-                                <div class="w-40 h-40 bg-green-500 text-white rounded-[3rem] flex items-center justify-center mb-12 shadow-2xl shadow-green-200 rotate-6 transition-transform font-sans">
+                            <div id="step-5" class="wizard-step hidden animate-in zoom-in duration-700 flex flex-col items-center justify-center flex-1 font-sans">
+                                <div class="w-40 h-40 bg-green-500 text-white rounded-[3rem] flex items-center justify-center mb-12 shadow-2xl shadow-green-200 rotate-6 transition-transform">
                                     <i data-lucide="check-circle-2" class="w-24 h-24 font-sans"></i>
                                 </div>
                                 <h2 class="text-5xl font-black text-slate-900 mb-6 uppercase tracking-tighter font-sans">SUFORMUOTA</h2>
-                                <p id="success-message" class="text-slate-500 mb-10 max-w-sm mx-auto font-medium leading-relaxed font-sans font-sans"></p>
-                                <button onclick="resetWizard()" class="px-10 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all flex items-center gap-3 mx-auto font-sans font-sans">
-                                    <i data-lucide="refresh-ccw" class="w-4 h-4 font-sans font-sans"></i> Naujas nuskaitymas
+                                <p id="success-message" class="text-slate-500 mb-10 max-w-sm mx-auto font-medium leading-relaxed font-sans"></p>
+                                <button onclick="resetWizard()" class="px-10 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all flex items-center gap-3 mx-auto font-sans">
+                                    <i data-lucide="refresh-ccw" class="w-4 h-4 font-sans"></i> Naujas nuskaitymas
                                 </button>
                             </div>
 
                             <!-- NAVIGACIJA -->
-                            <div id="wizard-nav" class="mt-auto pt-20 flex justify-between items-center border-t border-slate-50 font-sans font-sans">
+                            <div id="wizard-nav" class="mt-auto pt-20 flex justify-between items-center border-t border-slate-50 font-sans">
                                 <button onclick="changeStep(-1)" id="prev-btn" class="flex items-center gap-3 font-black uppercase tracking-widest text-xs text-slate-300 hover:text-slate-900 transition-colors invisible font-sans">
                                     <i data-lucide="arrow-left" class="w-6 h-6 font-sans"></i> Atgal
                                 </button>
-                                <div class="flex items-center gap-6">
+                                <div class="flex items-center gap-6 font-sans">
                                     <button onclick="handleLogout()" class="text-xs font-black text-slate-300 uppercase hover:text-red-500 transition-colors font-sans">Atšaukti</button>
-                                    <button onclick="changeStep(1)" id="next-btn" class="bg-slate-900 hover:bg-black text-white font-black px-16 py-6 rounded-[2rem] flex items-center gap-4 shadow-2xl disabled:bg-slate-100 disabled:text-slate-200 transition-all uppercase tracking-widest text-xs font-sans font-sans font-sans">
-                                        Toliau <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                                    <button onclick="changeStep(1)" id="next-btn" class="bg-slate-900 hover:bg-black text-white font-black px-16 py-6 rounded-[2rem] flex items-center gap-4 shadow-2xl disabled:bg-slate-100 disabled:text-slate-200 transition-all uppercase tracking-widest text-xs font-sans">
+                                        Toliau <i data-lucide="arrow-right" class="w-6 h-6 font-sans"></i>
                                     </button>
                                 </div>
                             </div>
@@ -207,10 +203,10 @@
                 </div>
 
                 <!-- ADMIN PANELIS -->
-                <div id="admin-panel" class="hidden p-12 space-y-16 max-w-7xl mx-auto w-full font-sans font-sans">
-                    <header class="flex justify-between items-end border-b border-slate-100 pb-12 font-sans font-sans">
+                <div id="admin-panel" class="hidden p-12 space-y-16 max-w-7xl mx-auto w-full font-sans">
+                    <header class="flex justify-between items-end border-b border-slate-100 pb-12 font-sans">
                         <div>
-                            <h2 id="admin-title" class="text-6xl font-black text-slate-900 uppercase tracking-tighter font-sans font-sans">Duomenų bazė</h2>
+                            <h2 id="admin-title" class="text-6xl font-black text-slate-900 uppercase tracking-tighter font-sans">Duomenų bazė</h2>
                             <div class="flex items-center gap-4 mt-4 font-sans">
                                 <span id="admin-badge" class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] font-sans">STATIKA</span>
                                 <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-sans">Struktūros valdymas</p>
@@ -222,10 +218,10 @@
                     </header>
 
                     <!-- DB LENTELĖ -->
-                    <div id="admin-db-view" class="bg-white rounded-[3.5rem] border border-slate-100 shadow-2xl overflow-hidden font-sans font-sans font-sans font-sans">
+                    <div id="admin-db-view" class="bg-white rounded-[3.5rem] border border-slate-100 shadow-2xl overflow-hidden font-sans">
                         <div class="p-10 bg-slate-50 flex items-center justify-between font-sans">
-                            <div class="relative w-96 text-left font-sans font-sans">
-                                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 font-sans font-sans font-sans"></i>
+                            <div class="relative w-96 text-left font-sans">
+                                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 font-sans"></i>
                                 <input type="text" placeholder="Ieškoti..." class="w-full pl-12 pr-6 py-4 bg-white rounded-2xl border border-slate-200 outline-none text-sm font-medium transition-all font-sans font-sans">
                             </div>
                         </div>
@@ -244,9 +240,9 @@
                                 <!-- Dinaminis turinys -->
                             </div>
                         </div>
-                        <div class="bg-slate-900 rounded-[4rem] p-16 text-white flex flex-col shadow-2xl relative border border-slate-800 font-sans font-sans font-sans font-sans font-sans font-sans font-sans font-sans">
-                            <h3 class="text-3xl font-black mb-10 uppercase tracking-tighter text-blue-400">Eksporto taisyklė</h3>
-                            <div id="export-rule-text" class="bg-slate-800/40 rounded-[2.5rem] p-10 flex-1 border border-slate-800 italic text-sm text-slate-400 leading-relaxed font-medium font-sans">
+                        <div class="bg-slate-900 rounded-[4rem] p-16 text-white flex flex-col shadow-2xl relative border border-slate-800 font-sans">
+                            <h3 class="text-3xl font-black mb-10 uppercase tracking-tighter text-blue-400 font-sans">Eksporto taisyklė</h3>
+                            <div id="export-rule-text" class="bg-slate-800/40 rounded-[2.5rem] p-10 flex-1 border border-slate-800 italic text-sm text-slate-400 leading-relaxed font-medium font-sans font-sans">
                                 <!-- Dinaminis tekstas -->
                             </div>
                             <button class="w-full mt-12 bg-blue-600 hover:bg-blue-700 py-7 rounded-[2.5rem] font-black uppercase tracking-widest text-[11px] transition-all shadow-xl shadow-blue-500/20 active:scale-95 font-sans">Išsaugoti pakeitimus</button>
@@ -326,8 +322,10 @@
             end.setMonth(end.getMonth() + 3);
             selection.dateStart = formatDate(start);
             selection.dateEnd = formatDate(end);
-            document.getElementById('dateStart').value = selection.dateStart;
-            document.getElementById('dateEnd').value = selection.dateEnd;
+            const dsEl = document.getElementById('dateStart');
+            const deEl = document.getElementById('dateEnd');
+            if (dsEl) dsEl.value = selection.dateStart;
+            if (deEl) deEl.value = selection.dateEnd;
         }
 
         // --- AUTH ---
@@ -374,7 +372,7 @@
             document.getElementById('login-error').classList.add('hidden');
         }
 
-        // --- WIZARD LOGIC ---
+        // --- VEDLIO LOGIKA ---
         function resetWizard() {
             userStep = 1;
             selection = { type: null, dateMode: 'auto', dateStart: formatDate(new Date()), dateEnd: '', file: null };
@@ -475,6 +473,11 @@
                 wizardNav.classList.toggle('hidden', userStep === 4 || userStep === 5);
             }
             
+            const promptEl = document.getElementById('formuoti-prompt');
+            const spinEl = document.getElementById('processing-spinner');
+            if (promptEl) promptEl.classList.remove('hidden');
+            if (spinEl) spinEl.classList.add('hidden');
+
             validateNext();
             lucide.createIcons();
         }
@@ -488,7 +491,7 @@
             btn.disabled = !valid;
         }
 
-        // --- PROCESSING ENGINE ---
+        // --- NUSKAITYMO VARIKLIS ---
         async function startProcessing() {
             document.getElementById('formuoti-prompt').classList.add('hidden');
             document.getElementById('processing-spinner').classList.remove('hidden');
@@ -501,16 +504,14 @@
                     
                     const isStatika = selection.type === 'Statika';
                     
-                    // Sheet matching logic
+                    // Lapo parinkimas
                     let targetSheetName = isStatika ? workbook.SheetNames[0] : workbook.SheetNames.find(n => n.toLowerCase() === 'led užimtumas' || n.toLowerCase().includes('užimtumas')) || workbook.SheetNames[0];
                     const sheet = workbook.Sheets[targetSheetName];
                     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
                     
-                    // Row offsets
+                    // Eilutės
                     const headerIdx = isStatika ? 14 : 17;
                     const dataStartRow = isStatika ? 15 : 18; 
-                    
-                    // UPDATED: Strictly include row 19 (idx 18) to row 726 (idx 725)
                     const dataEndRow = isStatika ? rows.length : Math.min(rows.length, 726);
                     
                     const dateRow = rows[headerIdx]; 
@@ -521,12 +522,10 @@
                     const resultData = [];
                     let lastEntryBase = null; 
 
-                    // Loop includes row 726 (idx 725) if dataEndRow is 726
                     for (let i = dataStartRow; i < dataEndRow; i++) {
                         const row = rows[i];
                         if (!row) continue;
 
-                        // Sticky logic: Kodas is M (12) for Statika, C (2) for LED
                         const triggerIdx = isStatika ? 12 : 2;
                         const cellTrigger = row[triggerIdx] ? String(row[triggerIdx]).trim() : '';
                         
@@ -542,7 +541,6 @@
                                     'Leidimai iki': formatDate(row[26]),
                                 };
                             } else {
-                                // LED specific column mapping (User confirmed: Status is A, Code is C)
                                 lastEntryBase = {
                                     'Statusas': row[0] || '', // A
                                     'Kodas': row[2] || '', // C
@@ -556,7 +554,6 @@
 
                         if (!lastEntryBase) continue;
 
-                        // Scan date columns
                         for (let j = startIdx; j < dateRow.length; j++) {
                             const rawHeaderDate = dateRow[j];
                             const cellDate = parseHeaderDate(rawHeaderDate);
@@ -604,7 +601,7 @@
             reader.readAsArrayBuffer(selection.file);
         }
 
-        // --- ADMIN PANELS LOGIC ---
+        // --- ADMIN DALIS ---
         function switchAdminTab(tab) {
             document.querySelectorAll('.admin-tab-btn').forEach(btn => {
                 if (btn.dataset.tab === tab) {
@@ -640,21 +637,21 @@
         function renderDB(type) {
             const table = document.getElementById('db-table');
             const data = type === 'static' ? INITIAL_STATIC_DB : INITIAL_LED_DB;
-            let html = `<thead><tr class="bg-slate-50 border-b border-slate-100"><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Statusas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Kodas</th>`;
+            let html = `<thead><tr class="bg-slate-50 border-b border-slate-100"><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Statusas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Kodas</th>`;
             if (type === 'static') {
-                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">Miestas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Pardavimų adresas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Tipas</th>`;
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Miestas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Pardavimų adresas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Tipas</th>`;
             } else {
-                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Ekranas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Adresas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Rezoliucija</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans font-sans">Darbo laikas</th>`;
+                html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Ekranas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Adresas</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Rezoliucija</th><th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest font-sans">Darbo laikas</th>`;
             }
-            html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right font-sans">Veiksmai</th></tr></thead><tbody class="divide-y divide-slate-50 font-sans font-sans">`;
+            html += `<th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right font-sans">Veiksmai</th></tr></thead><tbody class="divide-y divide-slate-50">`;
             data.forEach(item => {
-                html += `<tr class="hover:bg-slate-50 group font-sans"><td class="px-10 py-8 font-sans"><span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${item.statusas === 'OK' || item.statusas === 'Live' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} font-sans font-sans font-sans font-sans font-sans font-sans font-sans">${item.statusas}</span></td><td class="px-10 py-8 font-mono font-black text-blue-600 text-lg tracking-tight font-sans font-sans">${item.kodas}</td>`;
+                html += `<tr class="hover:bg-slate-50 group font-sans font-sans font-sans font-sans font-sans font-sans font-sans"><td class="px-10 py-8 font-sans font-sans font-sans font-sans"><span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${item.statusas === 'OK' || item.statusas === 'Live' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} font-sans font-sans font-sans font-sans">${item.statusas}</span></td><td class="px-10 py-8 font-mono font-black text-blue-600 text-lg tracking-tight font-sans font-sans font-sans font-sans font-sans">${item.kodas}</td>`;
                 if (type === 'static') {
-                    html += `<td class="px-10 py-8 text-slate-900 font-extrabold uppercase font-sans font-sans font-sans">${item.miestas}</td><td class="px-10 py-8 text-slate-500 font-medium text-sm font-sans font-sans font-sans">${item.adresas}</td><td class="px-10 py-8 font-black text-slate-400 text-[11px] uppercase tracking-wider font-sans font-sans">${item.tipas}</td>`;
+                    html += `<td class="px-10 py-8 text-slate-900 font-extrabold uppercase font-sans font-sans">${item.miestas}</td><td class="px-10 py-8 text-slate-500 font-medium text-sm font-sans font-sans font-sans">${item.adresas}</td><td class="px-10 py-8 font-black text-slate-400 text-[11px] uppercase tracking-wider font-sans font-sans font-sans">${item.tipas}</td>`;
                 } else {
-                    html += `<td class="px-10 py-8 text-slate-900 font-extrabold uppercase font-sans font-sans">${item.ekranas}</td><td class="px-10 py-8 text-slate-500 font-medium text-sm font-sans font-sans">${item.adresas}</td><td class="px-10 py-8 font-black text-slate-400 text-[11px] uppercase font-sans">${item.rezoliucija}</td><td class="px-10 py-8 font-mono text-xs font-sans">${item.darboLaikas}</td>`;
+                    html += `<td class="px-10 py-8 text-slate-900 font-extrabold uppercase font-sans font-sans font-sans font-sans">${item.ekranas}</td><td class="px-10 py-8 text-slate-500 font-medium text-sm font-sans font-sans font-sans font-sans">${item.adresas}</td><td class="px-10 py-8 font-black text-slate-400 text-[11px] uppercase font-sans font-sans font-sans font-sans font-sans">${item.rezoliucija}</td><td class="px-10 py-8 font-mono text-xs font-sans font-sans font-sans font-sans font-sans font-sans">${item.darboLaikas}</td>`;
                 }
-                html += `<td class="px-10 py-8 text-right opacity-0 group-hover:opacity-100 transition-opacity font-sans font-sans font-sans font-sans font-sans font-sans"><button class="p-3 text-slate-300 hover:text-red-500 font-sans font-sans"><i data-lucie="trash-2" class="w-5 h-5 font-sans"></i></button></td></tr>`;
+                html += `<td class="px-10 py-8 text-right opacity-0 group-hover:opacity-100 transition-opacity font-sans font-sans font-sans font-sans font-sans font-sans font-sans font-sans"><button class="p-3 text-slate-300 hover:text-red-500 font-sans font-sans font-sans font-sans"><i data-lucide="trash-2" class="w-5 h-5 font-sans"></i></button></td></tr>`;
             });
             html += `</tbody>`;
             table.innerHTML = html;
@@ -666,10 +663,10 @@
             const template = TEMPLATES[type];
             let html = '';
             template.forEach((col, i) => {
-                html += `<div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100 group transition-all font-sans font-sans font-sans font-sans font-sans"><div class="flex items-center gap-5 font-sans font-sans"><span class="text-xs font-black text-blue-600 bg-blue-50 w-8 h-8 rounded-full flex items-center justify-center font-sans font-sans font-sans font-sans font-sans">${i+1}</span><span class="text-sm font-black text-slate-800 uppercase tracking-tight font-sans font-sans font-sans font-sans">${col.n}</span></div><span class="text-[9px] font-black px-3 py-1.5 rounded-lg shadow-sm ${col.t === 'FIX' ? 'bg-slate-900 text-white font-sans font-sans' : col.t === 'CAL' ? 'bg-blue-500 text-white font-sans font-sans' : 'bg-white text-slate-500 font-sans font-sans'} font-sans font-sans font-sans font-sans">${col.t}</span></div>`;
+                html += `<div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100 group transition-all font-sans font-sans font-sans font-sans font-sans font-sans font-sans"><div class="flex items-center gap-5 font-sans font-sans font-sans font-sans font-sans font-sans font-sans"><span class="text-xs font-black text-blue-600 bg-blue-50 w-8 h-8 rounded-full flex items-center justify-center font-sans font-sans font-sans font-sans font-sans font-sans font-sans">${i+1}</span><span class="text-sm font-black text-slate-800 uppercase tracking-tight font-sans font-sans font-sans font-sans font-sans font-sans font-sans">${col.n}</span></div><span class="text-[9px] font-black px-3 py-1.5 rounded-lg shadow-sm ${col.t === 'FIX' ? 'bg-slate-900 text-white font-sans font-sans font-sans font-sans font-sans font-sans font-sans' : col.t === 'CAL' ? 'bg-blue-500 text-white font-sans font-sans font-sans font-sans font-sans font-sans font-sans' : 'bg-white text-slate-500 font-sans font-sans font-sans font-sans font-sans font-sans font-sans'} font-sans font-sans font-sans font-sans font-sans font-sans font-sans font-sans font-sans font-sans font-sans font-sans">${col.t}</span></div>`;
             });
             list.innerHTML = html;
-            ruleText.innerText = type === 'static' ? "Statika: nuskaitoma nuo 16 iki galo." : "LED: griežtai nuskaitomas intervalas nuo 19 iki 726 eilutės lape 'LED užimtumas'. Statusas - A, Kodas - C stulpelyje.";
+            ruleText.innerText = type === 'static' ? "Statika: nuskaitoma nuo 16 iki galo." : "LED: nuskaitomas intervalas nuo 19 iki 726 eilutės lape 'LED užimtumas'. Statusas - A, Kodas - C stulpelyje.";
         }
 
         window.onload = () => { lucide.createIcons(); initDates(); };
