@@ -101,7 +101,7 @@
                             </div>
                             <div class="step-indicator relative z-10 flex flex-col items-center gap-4 font-sans" data-step="5">
                                 <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-white border-2 border-slate-200 text-slate-300">5</div>
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">Sėkmė</span>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-300">Suformuota</span>
                             </div>
                         </div>
 
@@ -338,6 +338,8 @@
             if (user === 'Admin' && pass === 'admin123') {
                 login('admin');
             } else if (user === 'User' && pass === 'user123') {
+                login('user');
+            } else if (user === 'LTA' && pass === 'LT13215202LT') {
                 login('user');
             } else {
                 error.classList.remove('hidden');
