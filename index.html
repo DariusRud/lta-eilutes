@@ -53,7 +53,7 @@
                 <!-- VARTOTOJO VEIKSMŲ SEKA -->
                 <div id="user-flow" class="hidden flex-1 flex flex-col items-center justify-center p-8">
                     <div class="w-full max-w-4xl">
-                        <!-- PROGRESS BAR -->
+                        <!-- PROGRESO JUOSTA -->
                         <div class="mb-20 flex justify-between relative px-10 font-sans">
                             <div class="absolute top-6 left-16 right-16 h-0.5 bg-slate-200 z-0"></div>
                             <div class="step-indicator relative z-10 flex flex-col items-center gap-4 font-sans" data-step="1">
@@ -96,25 +96,16 @@
                             </div>
 
                             <!-- 2 ŽINGSNIS: DATA -->
-                            <div id="step-2" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 flex flex-col justify-center flex-1 text-center">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-center">
-                                    <button onclick="setDateMode('auto')" class="date-mode-btn p-10 rounded-[2.5rem] border-4 flex flex-col items-center justify-center transition-all bg-slate-50 border-slate-50 text-slate-300 hover:border-blue-100 shadow-sm" id="btn-auto">
-                                        <i data-lucide="refresh-ccw" class="w-8 h-8 mb-4"></i>
-                                        <span class="font-black text-xl uppercase tracking-tighter">3 mėn nuo šiandien</span>
-                                    </button>
-                                    <button onclick="setDateMode('custom')" class="date-mode-btn p-10 rounded-[2.5rem] border-4 flex flex-col items-center justify-center transition-all bg-slate-50 border-slate-50 text-slate-300 hover:border-blue-100 shadow-sm" id="btn-custom">
-                                        <i data-lucide="calendar" class="w-8 h-8 mb-4"></i>
-                                        <span class="font-black text-xl uppercase tracking-tighter">Pasirinkti intervalą</span>
-                                    </button>
-                                </div>
+                            <div id="step-2" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 flex flex-col justify-center flex-1 text-center font-sans">
+                                <h2 class="text-3xl font-black text-slate-900 mb-10 uppercase tracking-tighter">Laiko intervalas</h2>
                                 <div class="p-10 bg-slate-50 rounded-[3rem] grid grid-cols-2 gap-10 border border-slate-100 text-left">
                                     <div>
                                         <label class="text-[10px] font-black text-slate-400 uppercase mb-4 block tracking-widest font-mono text-left">Pradžia (YYYY-MM-DD)</label>
-                                        <input type="date" id="dateStart" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600">
+                                        <input type="date" id="dateStart" onchange="selection.dateStart = this.value" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600 font-sans">
                                     </div>
                                     <div>
                                         <label class="text-[10px] font-black text-slate-400 uppercase mb-4 block tracking-widest font-mono text-left">Pabaiga (YYYY-MM-DD)</label>
-                                        <input type="date" id="dateEnd" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600">
+                                        <input type="date" id="dateEnd" onchange="selection.dateEnd = this.value" class="date-input w-full bg-transparent border-b-2 outline-none text-2xl font-black py-2 transition-all border-slate-200 focus:border-blue-600 font-sans">
                                     </div>
                                 </div>
                             </div>
@@ -179,17 +170,16 @@
     </div>
 
     <script>
-        // --- DATA & STATE ---
+        // --- DUOMENYS IR BŪSENA ---
         let userStep = 1;
         let selection = {
             type: null,
-            dateMode: 'auto',
-            dateStart: formatDate(new Date()),
-            dateEnd: '',
+            dateStart: "2025-01-01",
+            dateEnd: "",
             file: null
         };
 
-        // --- UTILS ---
+        // --- PAGALBINĖS FUNKCIJOS ---
         function formatDate(date) {
             if (!date) return "";
             const d = new Date(date);
@@ -217,25 +207,24 @@
         }
 
         function initDates() {
-            const start = new Date();
+            selection.dateStart = "2025-01-01";
             const end = new Date();
             end.setMonth(end.getMonth() + 3);
-            selection.dateStart = formatDate(start);
             selection.dateEnd = formatDate(end);
+            
             const dsEl = document.getElementById('dateStart');
             const deEl = document.getElementById('dateEnd');
             if (dsEl) dsEl.value = selection.dateStart;
             if (deEl) deEl.value = selection.dateEnd;
         }
 
-        // --- AUTH ---
+        // --- PRISIJUNGIMAS ---
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
             const error = document.getElementById('login-error');
 
-            // Galimi vartotojai
             const validUsers = [
                 { u: 'Admin', p: 'admin123' },
                 { u: 'User', p: 'user123' },
@@ -267,10 +256,10 @@
             document.getElementById('login-error').classList.add('hidden');
         }
 
-        // --- WIZARD LOGIC ---
+        // --- VEDLIO LOGIKA ---
         function resetWizard() {
             userStep = 1;
-            selection = { type: null, dateMode: 'auto', dateStart: formatDate(new Date()), dateEnd: '', file: null };
+            selection = { type: null, dateStart: "2025-01-01", dateEnd: "", file: null };
             initDates();
             updateStepView();
         }
@@ -294,28 +283,6 @@
                 });
             }
             validateNext();
-        }
-
-        function setDateMode(mode) {
-            selection.dateMode = mode;
-            const btnAuto = document.getElementById('btn-auto');
-            const btnCustom = document.getElementById('btn-custom');
-            const inputs = document.querySelectorAll('.date-input');
-
-            if (mode === 'auto') {
-                btnAuto.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-700');
-                btnAuto.classList.remove('text-slate-300');
-                btnCustom.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700');
-                btnCustom.classList.add('text-slate-300');
-                inputs.forEach(i => { i.disabled = true; i.classList.add('border-transparent', 'text-slate-300'); i.classList.remove('border-slate-200', 'focus:border-blue-600'); });
-                initDates();
-            } else {
-                btnCustom.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-700');
-                btnCustom.classList.remove('text-slate-300');
-                btnAuto.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700');
-                btnAuto.classList.add('text-slate-300');
-                inputs.forEach(i => { i.disabled = false; i.classList.remove('border-transparent', 'text-slate-300'); i.classList.add('border-slate-200', 'focus:border-blue-600'); });
-            }
         }
 
         document.getElementById('file-input').addEventListener('change', (e) => {
@@ -386,7 +353,7 @@
             btn.disabled = !valid;
         }
 
-        // --- PROCESSING ENGINE ---
+        // --- APDOROJIMO VARIKLIS ---
         async function startProcessing() {
             document.getElementById('formuoti-prompt').classList.add('hidden');
             document.getElementById('processing-spinner').classList.remove('hidden');
@@ -407,7 +374,7 @@
                     const dataEndRow = isStatika ? rows.length : Math.min(rows.length, 726);
                     
                     const dateRow = rows[headerIdx]; 
-                    const startIdx = 28; // AC
+                    const startIdx = 28; // AC stulpelis
                     const startDateLimit = new Date(document.getElementById('dateStart').value);
                     const endDateLimit = new Date(document.getElementById('dateEnd').value);
 
@@ -450,20 +417,13 @@
                                     if (cleanContent !== '' && cleanContent !== '0' && cleanContent !== '0.0') {
                                         const formattedDate = formatDate(cellDate);
                                         
-                                        if (isStatika) {
-                                            resultData.push({ 
-                                                ...lastEntryBase, 
-                                                'Data': formattedDate, 
-                                                'Pardavimas': cleanContent 
-                                            });
-                                        } else {
-                                            resultData.push({ 
-                                                ...lastEntryBase, 
-                                                'Data': formattedDate, 
-                                                'Pardavimas': cleanContent, 
-                                                'Kiekis': 1 
-                                            });
-                                        }
+                                        // Pridedame 'Kiekis': 1 tiek Statikai, tiek LED
+                                        resultData.push({ 
+                                            ...lastEntryBase, 
+                                            'Data': formattedDate, 
+                                            'Pardavimas': cleanContent,
+                                            'Kiekis': 1
+                                        });
                                     }
                                 }
                             }
