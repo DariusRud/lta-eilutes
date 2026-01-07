@@ -174,7 +174,7 @@
         let userStep = 1;
         let selection = {
             type: null,
-            dateStart: "2025-01-01",
+            dateStart: "",
             dateEnd: "",
             file: null
         };
@@ -206,14 +206,20 @@
             return isNaN(d.getTime()) ? null : d;
         }
 
-        function initDates() {
-            selection.dateStart = "2025-01-01";
-            const end = new Date();
-            end.setMonth(end.getMonth() + 3);
-            selection.dateEnd = formatDate(end);
-            
+        function updateDatesByType(type) {
             const dsEl = document.getElementById('dateStart');
             const deEl = document.getElementById('dateEnd');
+
+            if (type === 'Statika') {
+                selection.dateStart = "2024-01-01";
+                selection.dateEnd = "2026-12-31";
+            } else if (type === 'LED') {
+                selection.dateStart = "2023-10-01";
+                const end = new Date();
+                end.setDate(end.getDate() + 90);
+                selection.dateEnd = formatDate(end);
+            }
+
             if (dsEl) dsEl.value = selection.dateStart;
             if (deEl) deEl.value = selection.dateEnd;
         }
@@ -259,8 +265,7 @@
         // --- VEDLIO LOGIKA ---
         function resetWizard() {
             userStep = 1;
-            selection = { type: null, dateStart: "2025-01-01", dateEnd: "", file: null };
-            initDates();
+            selection = { type: null, dateStart: "", dateEnd: "", file: null };
             updateStepView();
         }
 
@@ -281,6 +286,9 @@
                         if (label) { label.classList.add('text-slate-300'); label.classList.remove('text-blue-700'); }
                     }
                 });
+                
+                // Atnaujiname datas priklausomai nuo pasirinkto tipo
+                updateDatesByType(value);
             }
             validateNext();
         }
@@ -417,7 +425,6 @@
                                     if (cleanContent !== '' && cleanContent !== '0' && cleanContent !== '0.0') {
                                         const formattedDate = formatDate(cellDate);
                                         
-                                        // Pridedame 'Kiekis': 1 tiek Statikai, tiek LED
                                         resultData.push({ 
                                             ...lastEntryBase, 
                                             'Data': formattedDate, 
@@ -456,7 +463,7 @@
             reader.readAsArrayBuffer(selection.file);
         }
 
-        window.onload = () => { lucide.createIcons(); initDates(); };
+        window.onload = () => { lucide.createIcons(); };
     </script>
 </body>
 </html>
