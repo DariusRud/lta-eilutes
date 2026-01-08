@@ -287,7 +287,6 @@
                     }
                 });
                 
-                // Atnaujiname datas priklausomai nuo pasirinkto tipo
                 updateDatesByType(value);
             }
             validateNext();
@@ -398,12 +397,25 @@
                         
                         if (cellTrigger !== '') {
                             if (isStatika) {
+                                // STATIKA: Įtraukiame papildomus stulpelius Q(16) - W(22)
                                 lastEntryBase = {
-                                    'Statusas': row[1] || '', 'Kodas': row[12] || '', 'Miestas': row[13] || '',
-                                    'Pardavimų adresas': row[14] || '', 'Tipas': row[15] || '',
-                                    'Leidimai nuo': formatDate(row[25]), 'Leidimai iki': formatDate(row[26]),
+                                    'Statusas': row[1] || '', 
+                                    'Kodas': row[12] || '', 
+                                    'Miestas': row[13] || '',
+                                    'Pardavimų adresas': row[14] || '', 
+                                    'Tipas': row[15] || '',
+                                    'P': row[16] || '',
+                                    'A': row[17] || '',
+                                    'M2': row[18] || '',
+                                    'Kategorija': row[19] || '',
+                                    '1 sav. nuomos GROSS kaina': row[20] || '',
+                                    'Kabinimo kaina': row[21] || '',
+                                    'Kontaktų skaičius': row[22] || '',
+                                    'Leidimai nuo': formatDate(row[25]), 
+                                    'Leidimai iki': formatDate(row[26]),
                                 };
                             } else {
+                                // LED lieka kaip buvę
                                 lastEntryBase = {
                                     'Statusas': row[0] || '', 'Kodas': row[2] || '', 'Ekranas': row[3] || '',
                                     'Adresas': row[4] || '', 'Rezoliucija': row[5] || '', 'Darbo laikas': row[6] || '',
