@@ -21,7 +21,9 @@
         <!-- PRISIJUNGIMO VAIZDAS -->
         <div id="login-view" class="flex-1 flex items-center justify-center p-8">
             <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-12 border border-slate-100">
-                <div class="flex flex-col items-center mb-12 text-center">
+                <div class="flex flex-col items-center mb-10 text-center">
+                    <!-- PRIDĖTAS PRIERAŠAS -->
+                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-3 block">LED ir Statikos užimtumo failų konvertavimas į eilutes</span>
                     <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter font-sans">Prisijungimas</h1>
                 </div>
                 <form id="login-form" class="space-y-6">
@@ -397,7 +399,6 @@
                         
                         if (cellTrigger !== '') {
                             if (isStatika) {
-                                // STATIKA: Įtraukiame papildomus stulpelius Q(16) - W(22)
                                 lastEntryBase = {
                                     'Statusas': row[1] || '', 
                                     'Kodas': row[12] || '', 
@@ -415,7 +416,6 @@
                                     'Leidimai iki': formatDate(row[26]),
                                 };
                             } else {
-                                // LED lieka kaip buvę
                                 lastEntryBase = {
                                     'Statusas': row[0] || '', 'Kodas': row[2] || '', 'Ekranas': row[3] || '',
                                     'Adresas': row[4] || '', 'Rezoliucija': row[5] || '', 'Darbo laikas': row[6] || '',
