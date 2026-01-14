@@ -21,9 +21,7 @@
         <!-- PRISIJUNGIMO VAIZDAS -->
         <div id="login-view" class="flex-1 flex items-center justify-center p-8">
             <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-12 border border-slate-100">
-                <div class="flex flex-col items-center mb-10 text-center">
-                    <!-- PRIDĖTAS PRIERAŠAS -->
-                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-3 block">LED ir Statikos užimtumo failų konvertavimas į eilutes</span>
+                <div class="flex flex-col items-center mb-12 text-center">
                     <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter font-sans">Prisijungimas</h1>
                 </div>
                 <form id="login-form" class="space-y-6">
@@ -49,9 +47,7 @@
 
         <!-- PAGRINDINIS VAIZDAS -->
         <div id="main-view" class="hidden flex-1 flex h-screen overflow-hidden bg-white">
-            <!-- TURINYS -->
             <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50 font-sans">
-                
                 <!-- VARTOTOJO VEIKSMŲ SEKA -->
                 <div id="user-flow" class="hidden flex-1 flex flex-col items-center justify-center p-8">
                     <div class="w-full max-w-4xl">
@@ -82,7 +78,6 @@
 
                         <!-- KORTELĖ -->
                         <div class="bg-white rounded-[4rem] shadow-2xl p-16 md:p-24 min-h-[550px] flex flex-col border border-slate-100 relative overflow-hidden text-center font-sans">
-                            
                             <!-- 1 ŽINGSNIS: TIPAS -->
                             <div id="step-1" class="wizard-step animate-in fade-in slide-in-from-bottom-12 duration-700 flex flex-col justify-center flex-1">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center">
@@ -163,7 +158,6 @@
                                     </button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -172,7 +166,6 @@
     </div>
 
     <script>
-        // --- DUOMENYS IR BŪSENA ---
         let userStep = 1;
         let selection = {
             type: null,
@@ -181,7 +174,6 @@
             file: null
         };
 
-        // --- PAGALBINĖS FUNKCIJOS ---
         function formatDate(date) {
             if (!date) return "";
             const d = new Date(date);
@@ -226,7 +218,6 @@
             if (deEl) deEl.value = selection.dateEnd;
         }
 
-        // --- PRISIJUNGIMAS ---
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const user = document.getElementById('username').value;
@@ -239,9 +230,7 @@
                 { u: 'LTA', p: 'LT13215202LT' }
             ];
 
-            const isValid = validUsers.some(v => v.u === user && v.p === pass);
-
-            if (isValid) {
+            if (validUsers.some(v => v.u === user && v.p === pass)) {
                 login();
             } else {
                 error.classList.remove('hidden');
@@ -264,7 +253,6 @@
             document.getElementById('login-error').classList.add('hidden');
         }
 
-        // --- VEDLIO LOGIKA ---
         function resetWizard() {
             userStep = 1;
             selection = { type: null, dateStart: "", dateEnd: "", file: null };
@@ -277,7 +265,6 @@
                 document.querySelectorAll('.type-btn').forEach(b => {
                     const icon = b.querySelector('svg, i');
                     const label = b.querySelector('span');
-                    
                     if (b.dataset.type === value) {
                         b.classList.add('border-blue-600', 'bg-blue-50', 'shadow-inner');
                         if (icon) { icon.classList.remove('text-slate-200'); icon.classList.add('text-blue-600'); }
@@ -288,7 +275,6 @@
                         if (label) { label.classList.add('text-slate-300'); label.classList.remove('text-blue-700'); }
                     }
                 });
-                
                 updateDatesByType(value);
             }
             validateNext();
@@ -317,7 +303,6 @@
                 const stepNum = parseInt(ind.dataset.step);
                 const circle = ind.querySelector('div');
                 const span = ind.querySelector('span');
-
                 if (userStep > stepNum) {
                     circle.className = "w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-green-500 text-white shadow-xl ring-4 ring-white";
                     circle.innerHTML = '<i data-lucide="check" class="w-6 h-6"></i>';
@@ -335,20 +320,11 @@
             });
 
             const prevBtn = document.getElementById('prev-btn');
-            if (prevBtn) {
-                prevBtn.style.visibility = (userStep > 1 && userStep < 5) ? 'visible' : 'hidden';
-            }
+            if (prevBtn) prevBtn.style.visibility = (userStep > 1 && userStep < 5) ? 'visible' : 'hidden';
             
             const wizardNav = document.getElementById('wizard-nav');
-            if (wizardNav) {
-                wizardNav.classList.toggle('hidden', userStep === 4 || userStep === 5);
-            }
+            if (wizardNav) wizardNav.classList.toggle('hidden', userStep === 4 || userStep === 5);
             
-            const promptEl = document.getElementById('formuoti-prompt');
-            const spinEl = document.getElementById('processing-spinner');
-            if (promptEl) promptEl.classList.remove('hidden');
-            if (spinEl) spinEl.classList.add('hidden');
-
             validateNext();
             lucide.createIcons();
         }
@@ -362,7 +338,6 @@
             btn.disabled = !valid;
         }
 
-        // --- APDOROJIMO VARIKLIS ---
         async function startProcessing() {
             document.getElementById('formuoti-prompt').classList.add('hidden');
             document.getElementById('processing-spinner').classList.remove('hidden');
@@ -372,27 +347,36 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array', cellDates: true });
-                    
                     const isStatika = selection.type === 'Statika';
-                    let targetSheetName = isStatika ? workbook.SheetNames[0] : workbook.SheetNames.find(n => n.toLowerCase() === 'led užimtumas' || n.toLowerCase().includes('užimtumas')) || workbook.SheetNames[0];
+                    let targetSheetName = isStatika ? workbook.SheetNames[0] : workbook.SheetNames.find(n => n.toLowerCase().includes('užimtumas')) || workbook.SheetNames[0];
                     const sheet = workbook.Sheets[targetSheetName];
                     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
                     
+                    // Nustatome antraštės ir duomenų pradžios eilutes
+                    // Statika: Antraštė 15 eilė (idx 14), Duomenys 16 eilė (idx 15)
+                    // LED: Antraštė 18 eilė (idx 17), Duomenys 19 eilė (idx 18)
                     const headerIdx = isStatika ? 14 : 17;
                     const dataStartRow = isStatika ? 15 : 18; 
-                    const dataEndRow = isStatika ? rows.length : Math.min(rows.length, 726);
+                    const dataEndRow = rows.length;
                     
                     const dateRow = rows[headerIdx]; 
                     const startIdx = 28; // AC stulpelis
                     const startDateLimit = new Date(document.getElementById('dateStart').value);
                     const endDateLimit = new Date(document.getElementById('dateEnd').value);
-
                     const resultData = [];
                     let lastEntryBase = null; 
 
                     for (let i = dataStartRow; i < dataEndRow; i++) {
                         const row = rows[i];
-                        if (!row) continue;
+                        if (!row || row.length === 0) continue;
+
+                        if (!isStatika) {
+                            const currentStatus = row[0] ? String(row[0]).trim() : '';
+                            const allowedStatuses = ['OK/Pr', 'OK/Sub/Ilg', 'Ruošiama'];
+                            // Jei statusas tuščias, tikriausiai pasibaigė duomenų blokas
+                            if (!currentStatus) continue; 
+                            if (!allowedStatuses.includes(currentStatus)) continue;
+                        }
 
                         const triggerIdx = isStatika ? 12 : 2;
                         const cellTrigger = row[triggerIdx] ? String(row[triggerIdx]).trim() : '';
@@ -400,20 +384,12 @@
                         if (cellTrigger !== '') {
                             if (isStatika) {
                                 lastEntryBase = {
-                                    'Statusas': row[1] || '', 
-                                    'Kodas': row[12] || '', 
-                                    'Miestas': row[13] || '',
-                                    'Pardavimų adresas': row[14] || '', 
-                                    'Tipas': row[15] || '',
-                                    'P': row[16] || '',
-                                    'A': row[17] || '',
-                                    'M2': row[18] || '',
-                                    'Kategorija': row[19] || '',
-                                    '1 sav. nuomos GROSS kaina': row[20] || '',
-                                    'Kabinimo kaina': row[21] || '',
-                                    'Kontaktų skaičius': row[22] || '',
-                                    'Leidimai nuo': formatDate(row[25]), 
-                                    'Leidimai iki': formatDate(row[26]),
+                                    'Statusas': row[1] || '', 'Kodas': row[12] || '', 'Miestas': row[13] || '',
+                                    'Pardavimų adresas': row[14] || '', 'Tipas': row[15] || '',
+                                    'P': row[16] || '', 'A': row[17] || '', 'M2': row[18] || '',
+                                    'Kategorija': row[19] || '', '1 sav. nuomos GROSS kaina': row[20] || '',
+                                    'Kabinimo kaina': row[21] || '', 'Kontaktų skaičius': row[22] || '',
+                                    'Leidimai nuo': formatDate(row[25]), 'Leidimai iki': formatDate(row[26]),
                                 };
                             } else {
                                 lastEntryBase = {
@@ -435,11 +411,9 @@
                                 if (content !== null && content !== undefined) {
                                     const cleanContent = String(content).trim();
                                     if (cleanContent !== '' && cleanContent !== '0' && cleanContent !== '0.0') {
-                                        const formattedDate = formatDate(cellDate);
-                                        
                                         resultData.push({ 
                                             ...lastEntryBase, 
-                                            'Data': formattedDate, 
+                                            'Data': formatDate(cellDate), 
                                             'Pardavimas': cleanContent,
                                             'Kiekis': 1
                                         });
@@ -449,21 +423,17 @@
                         }
                     }
 
-                    const finalOutput = resultData;
-
-                    await new Promise(res => setTimeout(res, 2000));
-
-                    if (finalOutput.length > 0) {
-                        const newSheet = XLSX.utils.json_to_sheet(finalOutput);
+                    await new Promise(res => setTimeout(res, 1500));
+                    if (resultData.length > 0) {
+                        const newSheet = XLSX.utils.json_to_sheet(resultData);
                         const newWorkbook = XLSX.utils.book_new();
                         XLSX.utils.book_append_sheet(newWorkbook, newSheet, "Eksportas");
                         XLSX.writeFile(newWorkbook, `Eksportas_${selection.type}_${formatDate(new Date())}.xlsx`);
-                        
-                        document.getElementById('success-message').innerHTML = `Duomenys suformuoti už laikotarpį: <br><b>${formatDate(startDateLimit)} iki ${formatDate(endDateLimit)}</b><br><small class="opacity-40 font-sans">Eilučių sugeneruota: ${finalOutput.length}</small>`;
+                        document.getElementById('success-message').innerHTML = `Suformuota eilučių: ${resultData.length}<br>Laikotarpis: ${formatDate(startDateLimit)} - ${formatDate(endDateLimit)}`;
                         userStep = 5;
                         updateStepView();
                     } else {
-                        alert("Užsakymų nerasta pasirinktame intervale.");
+                        alert("Užsakymų nerasta.");
                         updateStepView();
                     }
                 } catch (err) {
