@@ -21,7 +21,8 @@
         <!-- PRISIJUNGIMO VAIZDAS -->
         <div id="login-view" class="flex-1 flex items-center justify-center p-8">
             <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-12 border border-slate-100">
-                <div class="flex flex-col items-center mb-12 text-center">
+                <div class="flex flex-col items-center mb-10 text-center">
+                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-3 block">LED ir Statikos užimtumo failų konvertavimas į eilutes</span>
                     <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter font-sans">Prisijungimas</h1>
                 </div>
                 <form id="login-form" class="space-y-6">
@@ -42,13 +43,18 @@
                         Prisijungti
                     </button>
                 </form>
+                
+                <!-- PASKUTINIS ATNAUJINIMAS -->
+                <div class="mt-8 pt-6 border-t border-slate-50 text-center">
+                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Paskutinis atnaujinimas: 2026-01-15 09:05</span>
+                </div>
             </div>
         </div>
 
         <!-- PAGRINDINIS VAIZDAS -->
         <div id="main-view" class="hidden flex-1 flex h-screen overflow-hidden bg-white">
             <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50 font-sans">
-                <!-- VARTOTOJO VEIKSMŲ SEKA -->
+                
                 <div id="user-flow" class="hidden flex-1 flex flex-col items-center justify-center p-8">
                     <div class="w-full max-w-4xl">
                         <!-- PROGRESO JUOSTA -->
@@ -78,7 +84,8 @@
 
                         <!-- KORTELĖ -->
                         <div class="bg-white rounded-[4rem] shadow-2xl p-16 md:p-24 min-h-[550px] flex flex-col border border-slate-100 relative overflow-hidden text-center font-sans">
-                            <!-- 1 ŽINGSNIS: TIPAS -->
+                            
+                            <!-- 1 ŽINGSNIS -->
                             <div id="step-1" class="wizard-step animate-in fade-in slide-in-from-bottom-12 duration-700 flex flex-col justify-center flex-1">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center">
                                     <button onclick="setSelection('type', 'Statika')" class="type-btn p-14 rounded-[3rem] border-4 transition-all flex flex-col items-center justify-center gap-6 group hover:border-blue-100 bg-slate-50/50" data-type="Statika">
@@ -92,7 +99,7 @@
                                 </div>
                             </div>
 
-                            <!-- 2 ŽINGSNIS: DATA -->
+                            <!-- 2 ŽINGSNIS -->
                             <div id="step-2" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 flex flex-col justify-center flex-1 text-center font-sans">
                                 <h2 class="text-3xl font-black text-slate-900 mb-10 uppercase tracking-tighter">Laiko intervalas</h2>
                                 <div class="p-10 bg-slate-50 rounded-[3rem] grid grid-cols-2 gap-10 border border-slate-100 text-left">
@@ -107,7 +114,7 @@
                                 </div>
                             </div>
 
-                            <!-- 3 ŽINGSNIS: ĮKELTI -->
+                            <!-- 3 ŽINGSNIS -->
                             <div id="step-3" class="wizard-step hidden animate-in fade-in slide-in-from-right-12 duration-700 flex-1 flex flex-col">
                                 <h2 class="text-5xl font-black text-slate-900 mb-12 uppercase tracking-tighter">Įkelti failą</h2>
                                 <div class="relative group border-4 border-dashed border-slate-100 rounded-[3.5rem] p-24 flex flex-col items-center justify-center bg-slate-50/50 hover:bg-white hover:border-blue-400 transition-all cursor-pointer flex-1">
@@ -119,7 +126,7 @@
                                 </div>
                             </div>
 
-                            <!-- 4 ŽINGSNIS: FORMUOTI -->
+                            <!-- 4 ŽINGSNIS -->
                             <div id="step-4" class="wizard-step hidden animate-in zoom-in duration-700 flex flex-col items-center justify-center flex-1">
                                 <div id="formuoti-prompt">
                                     <button onclick="startProcessing()" class="px-24 py-7 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-[2.5rem] shadow-2xl shadow-blue-200 uppercase tracking-widest text-sm transition-all active:scale-95">Pradėti nuskaitymą</button>
@@ -130,11 +137,11 @@
                                         <div class="absolute inset-0 flex items-center justify-center font-black text-blue-600 uppercase text-xs tracking-tighter font-mono italic">...</div>
                                     </div>
                                     <h3 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Vyksta nuskaitymas</h3>
-                                    <p class="text-slate-400 mt-4 font-bold uppercase tracking-[0.2em] text-[10px]">Formuojamos duomenų eilutės...</p>
+                                    <p class="text-slate-400 mt-4 font-bold uppercase tracking-[0.2em] text-[10px]">Apdorojamas didelis kiekis duomenų...</p>
                                 </div>
                             </div>
 
-                            <!-- 5 ŽINGSNIS: SUFORMUOTA -->
+                            <!-- 5 ŽINGSNIS -->
                             <div id="step-5" class="wizard-step hidden animate-in zoom-in duration-700 flex flex-col items-center justify-center flex-1">
                                 <div class="w-40 h-40 bg-green-500 text-white rounded-[3rem] flex items-center justify-center mb-12 shadow-2xl shadow-green-200 rotate-6 transition-transform">
                                     <i data-lucide="check-circle-2" class="w-24 h-24"></i>
@@ -158,6 +165,7 @@
                                     </button>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -167,12 +175,7 @@
 
     <script>
         let userStep = 1;
-        let selection = {
-            type: null,
-            dateStart: "",
-            dateEnd: "",
-            file: null
-        };
+        let selection = { type: null, dateStart: "", dateEnd: "", file: null };
 
         function formatDate(date) {
             if (!date) return "";
@@ -186,9 +189,7 @@
 
         function parseHeaderDate(val) {
             if (val instanceof Date) return val;
-            if (typeof val === 'number') {
-                return new Date((val - 25569) * 86400 * 1000);
-            }
+            if (typeof val === 'number') return new Date((val - 25569) * 86400 * 1000);
             if (typeof val === 'string') {
                 const parts = val.split(/[./-]/);
                 if (parts.length === 3) {
@@ -203,7 +204,6 @@
         function updateDatesByType(type) {
             const dsEl = document.getElementById('dateStart');
             const deEl = document.getElementById('dateEnd');
-
             if (type === 'Statika') {
                 selection.dateStart = "2024-01-01";
                 selection.dateEnd = "2026-12-31";
@@ -213,28 +213,17 @@
                 end.setDate(end.getDate() + 90);
                 selection.dateEnd = formatDate(end);
             }
-
             if (dsEl) dsEl.value = selection.dateStart;
             if (deEl) deEl.value = selection.dateEnd;
         }
 
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
             const error = document.getElementById('login-error');
-
-            const validUsers = [
-                { u: 'Admin', p: 'admin123' },
-                { u: 'User', p: 'user123' },
-                { u: 'LTA', p: 'LT13215202LT' }
-            ];
-
-            if (validUsers.some(v => v.u === user && v.p === pass)) {
-                login();
-            } else {
-                error.classList.remove('hidden');
-            }
+            const validUsers = [{ u: 'Admin', p: 'admin123' }, { u: 'User', p: 'user123' }, { u: 'LTA', p: 'LT13215202LT' }];
+            if (validUsers.some(v => v.u === user && v.p === pass)) login(); else error.classList.remove('hidden');
         });
 
         function login() {
@@ -250,7 +239,6 @@
             document.getElementById('main-view').classList.add('hidden');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
-            document.getElementById('login-error').classList.add('hidden');
         }
 
         function resetWizard() {
@@ -267,12 +255,12 @@
                     const label = b.querySelector('span');
                     if (b.dataset.type === value) {
                         b.classList.add('border-blue-600', 'bg-blue-50', 'shadow-inner');
-                        if (icon) { icon.classList.remove('text-slate-200'); icon.classList.add('text-blue-600'); }
-                        if (label) { label.classList.remove('text-slate-300'); label.classList.add('text-blue-700'); }
+                        if (icon) icon.classList.add('text-blue-600');
+                        if (label) label.classList.add('text-blue-700');
                     } else {
                         b.classList.remove('border-blue-600', 'bg-blue-50', 'shadow-inner');
-                        if (icon) { icon.classList.add('text-slate-200'); icon.classList.remove('text-blue-600'); }
-                        if (label) { label.classList.add('text-slate-300'); label.classList.remove('text-blue-700'); }
+                        if (icon) icon.classList.remove('text-blue-600');
+                        if (label) label.classList.remove('text-blue-700');
                     }
                 });
                 updateDatesByType(value);
@@ -310,12 +298,10 @@
                     circle.className = "w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-blue-600 text-white shadow-xl ring-4 ring-white";
                     circle.innerHTML = stepNum;
                     span.classList.add('text-blue-600');
-                    span.classList.remove('text-slate-300');
                 } else {
                     circle.className = "w-12 h-12 rounded-full flex items-center justify-center font-black text-sm transition-all bg-white border-2 border-slate-200 text-slate-300";
                     circle.innerHTML = stepNum;
                     span.classList.remove('text-blue-600');
-                    span.classList.add('text-slate-300');
                 }
             });
 
@@ -325,6 +311,11 @@
             const wizardNav = document.getElementById('wizard-nav');
             if (wizardNav) wizardNav.classList.toggle('hidden', userStep === 4 || userStep === 5);
             
+            const promptEl = document.getElementById('formuoti-prompt');
+            const spinEl = document.getElementById('processing-spinner');
+            if (promptEl) promptEl.classList.remove('hidden');
+            if (spinEl) spinEl.classList.add('hidden');
+
             validateNext();
             lucide.createIcons();
         }
@@ -348,58 +339,58 @@
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array', cellDates: true });
                     const isStatika = selection.type === 'Statika';
-                    let targetSheetName = isStatika ? workbook.SheetNames[0] : workbook.SheetNames.find(n => n.toLowerCase().includes('užimtumas')) || workbook.SheetNames[0];
+                    
+                    let targetSheetName = isStatika ? 
+                        workbook.SheetNames[0] : 
+                        workbook.SheetNames.find(n => n.toLowerCase().includes('užimtumas')) || workbook.SheetNames[0];
+                    
                     const sheet = workbook.Sheets[targetSheetName];
                     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
                     
-                    // Nustatome antraštės ir duomenų pradžios eilutes
-                    // Statika: Antraštė 15 eilė (idx 14), Duomenys 16 eilė (idx 15)
-                    // LED: Antraštė 18 eilė (idx 17), Duomenys 19 eilė (idx 18)
                     const headerIdx = isStatika ? 14 : 17;
                     const dataStartRow = isStatika ? 15 : 18; 
-                    const dataEndRow = rows.length;
-                    
+                    const dataEndRow = isStatika ? rows.length : Math.min(rows.length, 726);
                     const dateRow = rows[headerIdx]; 
                     const startIdx = 28; // AC stulpelis
+                    
                     const startDateLimit = new Date(document.getElementById('dateStart').value);
                     const endDateLimit = new Date(document.getElementById('dateEnd').value);
-                    const resultData = [];
-                    let lastEntryBase = null; 
+
+                    const finalData = [];
+                    let headers = [];
+                    if (isStatika) {
+                        headers = ['Statusas', 'Kodas', 'Miestas', 'Pardavimų adresas', 'Tipas', 'P', 'A', 'M2', 'Kategorija', '1 sav. nuomos GROSS kaina', 'Kabinimo kaina', 'Kontaktų skaičius', 'Leidimai nuo', 'Leidimai iki', 'Data', 'Pardavimas', 'Kiekis'];
+                    } else {
+                        headers = ['Statusas', 'Kodas', 'Ekranas', 'Adresas', 'Rezoliucija', 'Darbo laikas', 'Data', 'Pardavimas', 'Kiekis'];
+                    }
+
+                    let lastEntryBaseArray = null; 
 
                     for (let i = dataStartRow; i < dataEndRow; i++) {
                         const row = rows[i];
-                        if (!row || row.length === 0) continue;
+                        if (!row) continue;
 
-                        if (!isStatika) {
-                            const currentStatus = row[0] ? String(row[0]).trim() : '';
-                            const allowedStatuses = ['OK/Pr', 'OK/Sub/Ilg', 'Ruošiama'];
-                            // Jei statusas tuščias, tikriausiai pasibaigė duomenų blokas
-                            if (!currentStatus) continue; 
-                            if (!allowedStatuses.includes(currentStatus)) continue;
-                        }
-
-                        const triggerIdx = isStatika ? 12 : 2;
+                        const triggerIdx = isStatika ? 12 : 2; 
                         const cellTrigger = row[triggerIdx] ? String(row[triggerIdx]).trim() : '';
                         
                         if (cellTrigger !== '') {
                             if (isStatika) {
-                                lastEntryBase = {
-                                    'Statusas': row[1] || '', 'Kodas': row[12] || '', 'Miestas': row[13] || '',
-                                    'Pardavimų adresas': row[14] || '', 'Tipas': row[15] || '',
-                                    'P': row[16] || '', 'A': row[17] || '', 'M2': row[18] || '',
-                                    'Kategorija': row[19] || '', '1 sav. nuomos GROSS kaina': row[20] || '',
-                                    'Kabinimo kaina': row[21] || '', 'Kontaktų skaičius': row[22] || '',
-                                    'Leidimai nuo': formatDate(row[25]), 'Leidimai iki': formatDate(row[26]),
-                                };
+                                lastEntryBaseArray = [
+                                    row[1] || '', row[12] || '', row[13] || '', row[14] || '', row[15] || '', 
+                                    row[16] || '', row[17] || '', row[18] || '', row[19] || '', row[20] || '', 
+                                    row[21] || '', row[22] || '', formatDate(row[25]), formatDate(row[26])
+                                ];
                             } else {
-                                lastEntryBase = {
-                                    'Statusas': row[0] || '', 'Kodas': row[2] || '', 'Ekranas': row[3] || '',
-                                    'Adresas': row[4] || '', 'Rezoliucija': row[5] || '', 'Darbo laikas': row[6] || '',
-                                };
+                                lastEntryBaseArray = [
+                                    row[0] || '', row[2] || '', row[3] || '', row[4] || '', row[5] || '', row[6] || ''
+                                ];
                             }
                         }
 
-                        if (!lastEntryBase) continue;
+                        if (!lastEntryBaseArray) continue;
+
+                        let foundSalesForThisScreen = false;
+                        let screenRowsAdded = [];
 
                         for (let j = startIdx; j < dateRow.length; j++) {
                             const rawHeaderDate = dateRow[j];
@@ -408,37 +399,45 @@
 
                             if (cellDate >= startDateLimit && cellDate <= endDateLimit) {
                                 const content = row[j];
+                                const formattedDate = formatDate(cellDate);
+                                let cleanContent = "";
+                                
                                 if (content !== null && content !== undefined) {
-                                    const cleanContent = String(content).trim();
-                                    if (cleanContent !== '' && cleanContent !== '0' && cleanContent !== '0.0') {
-                                        resultData.push({ 
-                                            ...lastEntryBase, 
-                                            'Data': formatDate(cellDate), 
-                                            'Pardavimas': cleanContent,
-                                            'Kiekis': 1
-                                        });
+                                    const val = String(content).trim();
+                                    if (val !== '' && val !== '0' && val !== '0.0') {
+                                        cleanContent = val;
+                                        foundSalesForThisScreen = true;
+                                        screenRowsAdded.push([...lastEntryBaseArray, formattedDate, cleanContent, 1]);
                                     }
                                 }
                             }
                         }
+
+                        if (!foundSalesForThisScreen && lastEntryBaseArray) {
+                            finalData.push([...lastEntryBaseArray, "", "", 1]);
+                        } else {
+                            screenRowsAdded.forEach(r => finalData.push(r));
+                        }
                     }
 
-                    await new Promise(res => setTimeout(res, 1500));
-                    if (resultData.length > 0) {
-                        const newSheet = XLSX.utils.json_to_sheet(resultData);
+                    await new Promise(res => setTimeout(res, 1000));
+                    
+                    if (finalData.length > 0) {
+                        const newSheet = XLSX.utils.aoa_to_sheet([headers, ...finalData]);
                         const newWorkbook = XLSX.utils.book_new();
                         XLSX.utils.book_append_sheet(newWorkbook, newSheet, "Eksportas");
                         XLSX.writeFile(newWorkbook, `Eksportas_${selection.type}_${formatDate(new Date())}.xlsx`);
-                        document.getElementById('success-message').innerHTML = `Suformuota eilučių: ${resultData.length}<br>Laikotarpis: ${formatDate(startDateLimit)} - ${formatDate(endDateLimit)}`;
+                        
+                        document.getElementById('success-message').innerHTML = `Suformuota <b>${finalData.length}</b> eilučių.<br><small>Statikoje tušti stendai įtraukti kaip 1 eilutė.</small>`;
                         userStep = 5;
                         updateStepView();
                     } else {
-                        alert("Užsakymų nerasta.");
+                        alert("Duomenų nerasta pasirinktame intervale.");
                         updateStepView();
                     }
                 } catch (err) {
                     console.error(err);
-                    alert("Klaida apdorojant failą.");
+                    alert("Klaida apdorojant failą. Patikrinkite stulpelių struktūrą.");
                     updateStepView();
                 }
             };
