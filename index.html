@@ -205,7 +205,8 @@
             const deEl = document.getElementById('dateEnd');
 
             if (type === 'Statika') {
-                selection.dateStart = "2024-12-30"; 
+                // Atnaujinta: Statikos intervalas patrumpintas dėl didelio duomenų kiekio
+                selection.dateStart = "2025-09-01"; 
                 selection.dateEnd = "2026-12-31";
             } else if (type === 'LED') {
                 selection.dateStart = "2023-10-01";
@@ -323,7 +324,9 @@
             if (prevBtn) prevBtn.style.visibility = (userStep > 1 && userStep < 5) ? 'visible' : 'hidden';
             
             const wizardNav = document.getElementById('wizard-nav');
-            if (wizardNav) wizardNav.classList.toggle('hidden', userStep === 4 || userStep === 5);
+            if (wizardNav) {
+                wizardNav.classList.toggle('hidden', userStep === 4 || userStep === 5);
+            }
             
             validateNext();
             lucide.createIcons();
@@ -352,13 +355,12 @@
                     const sheet = workbook.Sheets[targetSheetName];
                     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
                     
-                    // STATIKOS ŠALTINIO INDEKSAI (iš kur paimame duomenis pradiniame faile)
                     const S_INDEX = {
                         STATUS: 1,      // B
-                        L_PRADZIA: 11,  // L (Naujas papildomas)
-                        M_PABAIGA: 12,  // M (Naujas papildomas)
-                        N_KATEGORIJA: 13,// N (Naujas papildomas)
-                        KODAS: 15,      // P (Triggeris)
+                        L_PRADZIA: 11,  // L
+                        M_PABAIGA: 12,  // M
+                        N_KATEGORIJA: 13,// N
+                        KODAS: 15,      // P
                         MIESTAS: 16,    // Q
                         ADRESAS: 17,    // R
                         TIPAS: 18,      // S
@@ -416,7 +418,6 @@
                                     'Kontaktų skaičius': row[S_INDEX.KONTAKTAI] || '',
                                     'Leidimai nuo': formatDate(row[S_INDEX.LEID_NUO]), 
                                     'Leidimai iki': formatDate(row[S_INDEX.LEID_IKI]),
-                                    // Papildomi duomenys, kurie bus gale
                                     '_extra_L': row[S_INDEX.L_PRADZIA] || '',
                                     '_extra_M': row[S_INDEX.M_PABAIGA] || '',
                                     '_extra_N': row[S_INDEX.N_KATEGORIJA] || ''
@@ -479,7 +480,6 @@
                             }
                         }
 
-                        // Logika "n" įrašymui laisviems stendams (tik Statikoje)
                         if (isStatika && !hasSalesInThisRow) {
                             const pabaigaExtra = lastEntryBase['_extra_M'];
                             let effectiveEnd = endDateLimit;
